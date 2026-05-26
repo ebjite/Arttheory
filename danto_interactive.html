@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Danto | HUMN 110 Lesson 4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --burgundy: #6B1F2A;
+    --wine: #8B2E3F;
+    --cream: #F5F0E8;
+    --lightbg: #EDE8DF;
+    --acid: #C49A10;
+    --muted: #7A6A5A;
+    --black: #1A1010;
+    --white: #FFFFFF;
+    --green: #2D6A4F;
+    --green-light: #D8F3DC;
+    --red: #9B2226;
+    --red-light: #FFCCD5;
+    --yellow: #B5820A;
+    --yellow-light: #FFF3CD;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--black);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* HEADER */
+  .doc-header {
+    background: var(--burgundy);
+    color: var(--white);
+    padding: 36px 40px 28px;
+    margin: 0 -24px 0;
+    position: relative;
+  }
+  .doc-header::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 8px;
+    background: var(--acid);
+  }
+  .doc-header .tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--acid);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .doc-header h1 {
+    font-family: 'EB Garamond', serif;
+    font-size: 38px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .doc-header .subtitle {
+    font-family: 'EB Garamond', serif;
+    font-size: 18px;
+    color: rgba(255,255,255,0.75);
+    font-style: italic;
+  }
+  .doc-header .mission {
+    margin-top: 16px;
+    background: rgba(255,255,255,0.12);
+    border-left: 3px solid var(--acid);
+    padding: 10px 16px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.9);
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* SECTION HEADERS */
+  .section-header {
+    background: var(--wine);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 36px 0 0;
+    border-radius: 3px 3px 0 0;
+  }
+  .section-body {
+    background: var(--white);
+    border: 1px solid #D5C8BE;
+    border-top: none;
+    padding: 24px 28px;
+    border-radius: 0 0 3px 3px;
+    margin-bottom: 4px;
+  }
+  .section-instruction {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #E0D8D0;
+  }
+
+  /* READING */
+  .para-block { margin-bottom: 22px; }
+  .para-block p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--black);
+  }
+
+  .quote-block {
+    margin: 20px 0;
+    padding: 16px 20px;
+    background: var(--lightbg);
+    border-left: 4px solid var(--acid);
+    border-radius: 0 4px 4px 0;
+  }
+  .quote-block .quote-text {
+    font-family: 'EB Garamond', serif;
+    font-size: 17px;
+    font-style: italic;
+    color: var(--burgundy);
+    line-height: 1.6;
+  }
+  .quote-block .quote-source {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* APA REFERENCES */
+  .references {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 2px solid var(--burgundy);
+  }
+  .references h3 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--burgundy);
+    margin-bottom: 12px;
+  }
+  .references p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    padding-left: 32px;
+    text-indent: -32px;
+    margin-bottom: 8px;
+  }
+
+  /* ACTIVITY HEADER */
+  .activity-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--burgundy);
+    padding: 12px 20px;
+    margin: 36px 0 0;
+    border-radius: 3px 3px 0 0;
+  }
+  .activity-num {
+    background: var(--acid);
+    color: var(--black);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .activity-title {
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .activity-body {
+    background: var(--white);
+    border: 1px solid #D5C8BE;
+    border-top: none;
+    padding: 24px 28px;
+    border-radius: 0 0 3px 3px;
+  }
+
+  /* WORD BANK */
+  .word-bank {
+    background: var(--lightbg);
+    border: 1px solid #C8BAA8;
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+  }
+  .word-bank-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--burgundy);
+    margin-bottom: 10px;
+  }
+  .word-bank-note {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+  .word-bank-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .word-chip {
+    background: var(--white);
+    border: 1.5px solid var(--burgundy);
+    color: var(--burgundy);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* MATCH TABLE */
+  .match-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .match-table tr:nth-child(odd) td { background: var(--lightbg); }
+  .match-table tr:nth-child(even) td { background: var(--white); }
+  .match-table td { padding: 10px 14px; font-size: 14px; vertical-align: middle; }
+  .match-table .num { font-weight: 700; color: var(--burgundy); width: 32px; text-align: center; }
+  .match-table .subhead { flex: 1; }
+  .match-table .answer-col { width: 130px; }
+
+  .match-input-wrap { display: flex; align-items: center; gap: 8px; }
+  .match-letter-input {
+    width: 42px;
+    border: 2px solid #C8BAA8;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+    background: var(--white);
+    transition: border-color 0.2s;
+  }
+  .match-letter-input:focus { outline: none; border-color: var(--burgundy); }
+  .match-letter-input.correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .match-letter-input.incorrect { border-color: var(--red); background: var(--red-light); color: var(--red); }
+
+  /* EVIDENCE BOX */
+  .evidence-area {
+    margin-top: 14px;
+    width: 100%;
+  }
+  .evidence-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    margin-top: 12px;
+  }
+  .evidence-textarea {
+    width: 100%;
+    border: 1.5px solid #C8BAA8;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+    min-height: 60px;
+    background: var(--cream);
+    color: var(--black);
+    transition: border-color 0.2s;
+  }
+  .evidence-textarea:focus { outline: none; border-color: var(--burgundy); }
+
+  /* PART HEADERS */
+  .part-header {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--burgundy);
+    background: var(--lightbg);
+    padding: 7px 14px;
+    margin: 24px 0 12px;
+    border-radius: 3px;
+    border-left: 4px solid var(--burgundy);
+  }
+
+  /* SCRIPT LINES */
+  .script-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 4px;
+  }
+  .speaker {
+    width: 36px;
+    min-width: 36px;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 11px 0 11px 14px;
+    color: var(--white);
+  }
+  .speaker.a-speaker { background: var(--burgundy); }
+  .speaker.b-speaker { background: var(--wine); }
+  .line-text {
+    flex: 1;
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.7;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .script-line:nth-child(odd) .line-text { background: var(--lightbg); }
+  .script-line:nth-child(even) .line-text { background: var(--white); }
+
+  /* GAP INPUTS */
+  .gap-input {
+    border: none;
+    border-bottom: 2px solid var(--burgundy);
+    background: transparent;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: var(--burgundy);
+    padding: 2px 6px;
+    min-width: 90px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .gap-input:focus { outline: none; border-bottom-color: var(--acid); }
+  .gap-input.correct { border-bottom-color: var(--green); color: var(--green); background: var(--green-light); border-radius: 3px; border-bottom-width: 2px; }
+  .gap-input.incorrect { border-bottom-color: var(--red); color: var(--red); background: var(--red-light); border-radius: 3px; }
+  .gap-input.near { border-bottom-color: var(--yellow); color: var(--yellow); background: var(--yellow-light); border-radius: 3px; }
+  .gap-input.hint-revealed { border-bottom-style: dashed; }
+
+  /* GAP WRAP — keeps input + hint + sentence together */
+  .gap-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 2px;
+  }
+
+  /* LETTER HINT (Part 3) */
+  .letter-hint {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 2px;
+    transition: color 0.3s;
+  }
+  .letter-hint.revealed-2 { color: var(--acid); font-weight: 700; }
+  .letter-hint.revealed-3 { color: var(--burgundy); font-weight: 700; }
+
+  /* HINT SENTENCE */
+  .gap-hint {
+    display: none;
+    font-size: 12px;
+    color: var(--white);
+    background: var(--burgundy);
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-top: 4px;
+    max-width: 260px;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .gap-hint.visible { display: block; }
+
+  /* CHECK BUTTONS */
+  .check-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--burgundy);
+    color: var(--white);
+    border: none;
+    padding: 10px 22px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.2s;
+  }
+  .check-btn:hover { background: var(--wine); }
+  .check-btn:disabled { background: #C0B0A0; cursor: not-allowed; }
+
+  /* FEEDBACK */
+  .feedback-bar {
+    margin-top: 14px;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+  }
+  .feedback-bar.success { background: var(--green-light); color: var(--green); border: 1px solid var(--green); }
+  .feedback-bar.partial { background: var(--yellow-light); color: var(--yellow); border: 1px solid var(--yellow); }
+  .feedback-bar.error { background: var(--red-light); color: var(--red); border: 1px solid var(--red); }
+
+  /* LOCKED OVERLAY */
+  .section-locked {
+    opacity: 0.4;
+    pointer-events: none;
+    position: relative;
+  }
+  .section-locked::after {
+    content: 'Complete the previous activity to unlock';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    background: rgba(245,240,232,0.7);
+    border-radius: 0 0 3px 3px;
+  }
+
+  /* FREE EXERCISE */
+  .free-prompt {
+    background: var(--lightbg);
+    border-left: 4px solid var(--acid);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border-radius: 0 4px 4px 0;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--muted);
+  }
+  .starter-chip {
+    display: inline-block;
+    background: var(--burgundy);
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 3px;
+    margin-right: 6px;
+    font-style: normal;
+  }
+  .must-use {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 8px;
+  }
+  .must-use span {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--burgundy);
+    background: var(--lightbg);
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin: 0 2px;
+  }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    position: sticky;
+    top: 0;
+    background: var(--burgundy);
+    z-index: 100;
+    padding: 8px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .progress-label { color: var(--acid); font-size: 12px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
+  .progress-track { flex: 1; background: rgba(255,255,255,0.2); border-radius: 10px; height: 6px; }
+  .progress-fill { background: var(--acid); height: 6px; border-radius: 10px; transition: width 0.4s; width: 0%; }
+
+  /* JIGSAW REMINDER */
+  .jigsaw-reminder {
+    margin-top: 40px;
+    background: var(--burgundy);
+    color: var(--white);
+    padding: 18px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .jigsaw-reminder .tick { font-size: 22px; color: var(--acid); }
+
+  hr.divider { border: none; border-top: 1px solid #D5C8BE; margin: 28px 0; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap">
+  <span class="progress-label">TEAM DANTO</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-label" id="progressText">0 / 4</span>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="tag">HUMN 110 · Arts and Culture · Lesson 4</div>
+    <h1>Team Danto</h1>
+    <div class="subtitle">Arthur Danto and The Artworld Theory</div>
+    <div class="mission">Your job: become the expert. You will teach this theory to a partner who has read something completely different.</div>
+  </div>
+
+  <!-- READING -->
+  <div class="section-header">The Reading</div>
+  <div class="section-body">
+    <div class="section-instruction">Read the six paragraphs below carefully. You have 8 minutes.</div>
+
+    <div class="para-block">
+      <p>Arthur Danto was an American philosopher and art critic born in 1924. He spent most of his career at Columbia University in New York, where he became one of the most important thinkers about what art is and how we understand it. In 1964, he published a short but revolutionary essay called <em>The Artworld</em>, which changed the way philosophers, critics, and artists thought about art forever. Danto was not just a theorist; he also wrote weekly art criticism for <em>The Nation</em> magazine for over twenty years, meaning he was constantly looking at real art and asking real questions about it.</p>
+    </div>
+
+    <div class="para-block">
+      <p>Danto's central question was surprisingly simple: why is one object art and another object not, when they look exactly the same? He was inspired by Andy Warhol's Brillo Boxes, sculptures that looked completely identical to the cardboard boxes found in supermarket stockrooms. If you put both boxes in a room, you could not tell them apart by looking. Yet one was worth thousands of dollars and displayed in a gallery, while the other was thrown away. Danto asked: what is the difference? His answer was not about appearance. It was about context.</p>
+    </div>
+
+    <div class="para-block">
+      <p>Danto's answer was the concept of the Artworld. He argued that what makes something art is not its physical qualities, not how it looks, feels, or is made, but whether it is embedded within what he called an atmosphere of artistic theory. The Artworld is the network of people, institutions, and ideas that collectively define what counts as art at any given time. This includes galleries, museums, art critics, auction houses, curators, collectors, and art historians. When the Artworld accepts something as art, it becomes art. Without that acceptance, it remains just an object.</p>
+    </div>
+
+    <div class="quote-block">
+      <div class="quote-text">"To see something as art requires something the eye cannot detect, an atmosphere of artistic theory, a knowledge of the history of art."</div>
+      <div class="quote-source">Danto (1964, p. 580)</div>
+    </div>
+
+    <div class="para-block">
+      <p>Before Danto, most people assumed that you could tell if something was art by looking at it, by its beauty, skill, or craftsmanship. Danto completely overturned this. He said that aesthetic qualities are irrelevant to whether something is art or not. A dirty bed, an empty canvas, a pile of bricks: these could all be art, not because of what they look like, but because of the context in which they exist. This was a profound shift. It meant that art could be anything, as long as the right people and institutions framed it as art. It also meant that the same object could be art in one setting and not art in another.</p>
+    </div>
+
+    <div class="para-block">
+      <p>Tracey Emin's <em>My Bed</em> (1998) is a perfect example of Danto's theory in action. The bed, with its stained sheets, empty vodka bottles, used tissues, and cigarette packets, existed first in Emin's actual bedroom in London, where she spent several days unable to leave following a personal breakdown. In that context, it was not art. It was a bed. But when Emin moved it into the White Cube gallery and later to Tate Britain, the Artworld did its work. Critics wrote about it. The Turner Prize shortlisted it in 1999. In 2014, Christie's auction house sold it for £2,546,500. The Artworld had spoken. The object had not changed at all, but its status had changed completely.</p>
+    </div>
+
+    <div class="para-block">
+      <p>Danto's theory has been both hugely influential and heavily criticised. Some philosophers, particularly George Dickie, developed his ideas further into what became known as the Institutional Theory of Art. Others argued that Danto gave too much power to elite institutions, effectively allowing a small group of wealthy and well-connected people to decide what counts as culture for everyone. If the Artworld is controlled by galleries and auction houses in New York and London, whose art gets excluded? Despite these critiques, Danto's core insight, that art is defined by context, not appearance, remains one of the most important ideas in the philosophy of art, and his influence can be felt in almost every contemporary debate about what art is.</p>
+    </div>
+
+    <div class="references">
+      <h3>References</h3>
+      <p>Danto, A. C. (1964). The artworld. <em>The Journal of Philosophy, 61</em>(19), 571–584. https://doi.org/10.2307/2022937</p>
+      <p>Dickie, G. (1974). <em>Art and the aesthetic: An institutional analysis</em>. Cornell University Press.</p>
+      <p>Emin, T. (1998). <em>My bed</em> [Installation]. Tate Britain, London, United Kingdom.</p>
+      <p>Tate. (2015, April 2). <em>Tracey Emin on My Bed</em> [Video]. YouTube. https://www.youtube.com/watch?v=uv04ewpiqSc</p>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 1 -->
+  <div class="activity-header">
+    <span class="activity-num">ACTIVITY 1</span>
+    <span class="activity-title">Match the Subheadings</span>
+  </div>
+  <div class="activity-body" id="act1body">
+    <div class="section-instruction">The six subheadings below belong to the six paragraphs you just read, but they have been separated and shuffled. Match each subheading to its correct paragraph by writing the letter (A–F) in the box. <strong>Important:</strong> before you check, note which words or sentences in the paragraph guided your choice. You will be asked about this.</div>
+
+    <table class="match-table">
+      <tr>
+        <td class="num">1</td>
+        <td class="subhead">Why This Was So Radical</td>
+        <td class="answer-col">
+          <div class="match-input-wrap">
+            <input class="match-letter-input" type="text" maxlength="1" id="m1" data-answer="D" placeholder="?">
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="num">2</td>
+        <td class="subhead">Danto Applied: Tracey Emin's <em>My Bed</em></td>
+        <td class="answer-col">
+          <div class="match-input-wrap">
+            <input class="match-letter-input" type="text" maxlength="1" id="m2" data-answer="E" placeholder="?">
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="num">3</td>
+        <td class="subhead">The Problem Danto Was Trying to Solve</td>
+        <td class="answer-col">
+          <div class="match-input-wrap">
+            <input class="match-letter-input" type="text" maxlength="1" id="m3" data-answer="B" placeholder="?">
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="num">4</td>
+        <td class="subhead">The Theory: What is the Artworld?</td>
+        <td class="answer-col">
+          <div class="match-input-wrap">
+            <input class="match-letter-input" type="text" maxlength="1" id="m4" data-answer="C" placeholder="?">
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="num">5</td>
+        <td class="subhead">Criticisms and Lasting Impact</td>
+        <td class="answer-col">
+          <div class="match-input-wrap">
+            <input class="match-letter-input" type="text" maxlength="1" id="m5" data-answer="F" placeholder="?">
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="num">6</td>
+        <td class="subhead">Who Was Arthur Danto?</td>
+        <td class="answer-col">
+          <div class="match-input-wrap">
+            <input class="match-letter-input" type="text" maxlength="1" id="m6" data-answer="A" placeholder="?">
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div style="margin-top:20px;">
+      <div class="evidence-label">Before you check: what words or sentences guided each choice? Note them here.</div>
+      <textarea class="evidence-textarea" rows="3" placeholder="e.g. Subheading 3 — I chose B because the paragraph asks 'why is one object art and another not...'"></textarea>
+    </div>
+
+    <button class="check-btn" onclick="checkActivity1()">Check My Answers</button>
+    <div class="feedback-bar" id="fb1"></div>
+  </div>
+
+  <!-- ACTIVITY 2 -->
+  <div class="activity-header" id="act2header">
+    <span class="activity-num">ACTIVITY 2</span>
+    <span class="activity-title">Find the Facts</span>
+  </div>
+  <div class="activity-body section-locked" id="act2body">
+    <div class="section-instruction">The reading contains specific numbers, dates, prices, and facts. Hunt through the text and answer the questions below.</div>
+
+    <div class="evidence-label">1. In what year was Danto's essay <em>The Artworld</em> published?</div>
+    <textarea class="evidence-textarea" rows="1" id="f1" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">2. At which university did Danto spend most of his career?</div>
+    <textarea class="evidence-textarea" rows="1" id="f2" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">3. What was the name of the magazine Danto wrote criticism for, and for how long?</div>
+    <textarea class="evidence-textarea" rows="2" id="f3" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">4. What everyday object inspired Danto's theory? Who made it?</div>
+    <textarea class="evidence-textarea" rows="2" id="f4" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">5. What year was <em>My Bed</em> created? What year was it shortlisted for the Turner Prize?</div>
+    <textarea class="evidence-textarea" rows="1" id="f5" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">6. How much did <em>My Bed</em> sell for at Christie's? In what year?</div>
+    <textarea class="evidence-textarea" rows="1" id="f6" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">7. Name one other theorist mentioned who built on Danto's ideas.</div>
+    <textarea class="evidence-textarea" rows="1" id="f7" placeholder="Your answer..."></textarea>
+
+    <button class="check-btn" onclick="checkActivity2()">Check My Answers</button>
+    <div class="feedback-bar" id="fb2"></div>
+  </div>
+
+  <!-- ACTIVITY 3 -->
+  <div class="activity-header" id="act3header">
+    <span class="activity-num">ACTIVITY 3</span>
+    <span class="activity-title">The Conversation — Gap Fill</span>
+  </div>
+  <div class="activity-body section-locked" id="act3body">
+    <div class="section-instruction">Two students are discussing Danto's theory. Complete the script. The conversation gets progressively freer. Check each part before moving on.</div>
+
+    <!-- PART 1 -->
+    <div class="part-header">Part 1 · What is Danto's Theory?</div>
+    <div class="word-bank">
+      <div class="word-bank-label">Word Bank</div>
+      <div class="word-bank-note">Choose the correct word from the bank below for each gap. Each word is used once.</div>
+      <div class="word-bank-words">
+        <span class="word-chip">looks</span>
+        <span class="word-chip">auction</span>
+        <span class="word-chip">accepts</span>
+        <span class="word-chip">object</span>
+      </div>
+    </div>
+
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">OK so basically Danto said that what makes something art is not how it <input class="gap-input" id="p1g1" data-answer="looks" data-part="1" size="8"> — it's about context.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">Right, and by context he means the Artworld. So that's things like galleries, critics, and <input class="gap-input" id="p1g2" data-answer="auction" data-part="1" size="8"> houses.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">Exactly. So something can look completely normal, like a bed, and still be art if the Artworld <input class="gap-input" id="p1g3" data-answer="accepts" data-part="1" size="8"> it.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">And if the Artworld doesn't accept it, it's just an <input class="gap-input" id="p1g4" data-answer="object" data-part="1" size="8">. Even if it looks identical to something in a gallery.</div>
+    </div>
+
+    <button class="check-btn" onclick="checkPart(1)">Check Part 1</button>
+    <div class="feedback-bar" id="fbp1"></div>
+
+    <!-- PART 2 -->
+    <div class="part-header" style="margin-top:32px;">Part 2 · Applying it to <em>My Bed</em></div>
+    <div class="word-bank">
+      <div class="word-bank-label">Word Bank</div>
+      <div class="word-bank-note">Some words may need to be changed to a different form (e.g. tense, plural, suffix). If you use the right word in the wrong form, you will see a yellow result.</div>
+      <div class="word-bank-words">
+        <span class="word-chip">bedroom</span>
+        <span class="word-chip">London</span>
+        <span class="word-chip">Turner</span>
+        <span class="word-chip">2,546,500</span>
+        <span class="word-chip">change</span>
+        <span class="word-chip">frame</span>
+        <span class="word-chip">White Cube</span>
+      </div>
+    </div>
+
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">So with <em>My Bed</em>, when it was in Emin's <input class="gap-input" id="p2g1" data-answer="bedroom" data-part="2" data-root="bedroom" size="9"> in <input class="gap-input" id="p2g2" data-answer="London" data-part="2" data-root="london" size="7">, it wasn't art. It was just her life.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">But then she moved it to a gallery, the <input class="gap-input" id="p2g3" data-answer="White Cube" data-part="2" data-root="white cube" size="11">, and suddenly everything changed.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">Critics wrote about it. It got shortlisted for the <input class="gap-input" id="p2g4" data-answer="Turner" data-part="2" data-root="turner" size="7"> Prize. And in 2014 it sold for £<input class="gap-input" id="p2g5" data-answer="2,546,500" data-part="2" data-root="2546500" size="10">.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">The object was exactly the same. Nothing <input class="gap-input" id="p2g6" data-answer="changed" data-part="2" data-root="change" size="8"> it. Just the context around it.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">That's Danto's point: the Artworld is like an invisible <input class="gap-input" id="p2g7" data-answer="frame" data-part="2" data-root="frame" size="7"> that transforms objects into art.</div>
+    </div>
+
+    <button class="check-btn" onclick="checkPart(2)">Check Part 2</button>
+    <div class="feedback-bar" id="fbp2"></div>
+
+    <!-- PART 3 -->
+    <div class="part-header" style="margin-top:32px;">Part 3 · Does the Theory Have Limits?</div>
+    <div class="word-bank">
+      <div class="word-bank-label">Letter Hints</div>
+      <div class="word-bank-note">The first and last letter of each missing word are shown beside the gap. Check 3 times without getting it right: the second letter appears. Check again: the third letter appears. Check one more time: a hint sentence appears to help you.</div>
+    </div>
+
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">But doesn't that mean
+        <span class="gap-wrap" data-id="p3g1">
+          <input class="gap-input" id="p3g1" data-answer="anything" data-part="3" data-attempts="0" size="9">
+          <span class="letter-hint" data-original="a_______g">(a_______g)</span>
+          <span class="gap-hint" data-hint="Think about the word 'something'. Now think about a word that means every possible thing, with no limit at all."></span>
+        </span>
+        could be art if the right people decided it was?
+      </div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">I think that's exactly what
+        <span class="gap-wrap" data-id="p3g2">
+          <input class="gap-input" id="p3g2" data-answer="Danto" data-part="3" data-attempts="0" size="6">
+          <span class="letter-hint" data-original="D___o">(D___o)</span>
+          <span class="gap-hint" data-hint="Look at the reading. Who is the theorist being discussed in this worksheet?"></span>
+        </span>
+        was saying. Which is kind of
+        <span class="gap-wrap" data-id="p3g3">
+          <input class="gap-input" id="p3g3" data-answer="radical" data-part="3" data-attempts="0" size="8">
+          <span class="letter-hint" data-original="r_____l">(r_____l)</span>
+          <span class="gap-hint" data-hint="The subheading for paragraph D is 'Why This Was So ___'. The missing word is the same word. You can find it in the reading."></span>
+        </span>
+        when you think about it.
+      </div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">It also means that
+        <span class="gap-wrap" data-id="p3g4">
+          <input class="gap-input" id="p3g4" data-answer="powerful" data-part="3" data-attempts="0" size="9">
+          <span class="letter-hint" data-original="p______l">(p______l)</span>
+          <span class="gap-hint" data-hint="If an institution has a lot of power, we can describe it as this word. Try adding -ful to a word you already know."></span>
+        </span>
+        institutions have a lot of
+        <span class="gap-wrap" data-id="p3g5">
+          <input class="gap-input" id="p3g5" data-answer="control" data-part="3" data-attempts="0" size="8">
+          <span class="letter-hint" data-original="c_____l">(c_____l)</span>
+          <span class="gap-hint" data-hint="If you are in charge of something and can decide what happens to it, you have ___ over it. Think of a TV remote — you use it to ___ the screen."></span>
+        </span>
+        over what gets called art.
+      </div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">Right, and if those institutions are mostly in
+        <span class="gap-wrap" data-id="p3g6">
+          <input class="gap-input" id="p3g6" data-answer="New York" data-part="3" data-attempts="0" size="9">
+          <span class="letter-hint" data-original="N__ Y__k">(N__ Y__k)</span>
+          <span class="gap-hint" data-hint="The reading mentions two cities where galleries and auction houses are mostly found. This is the first one. It is a very famous city in the United States."></span>
+        </span>
+        and
+        <span class="gap-wrap" data-id="p3g7">
+          <input class="gap-input" id="p3g7" data-answer="London" data-part="3" data-attempts="0" size="7">
+          <span class="letter-hint" data-original="L____n">(L____n)</span>
+          <span class="gap-hint" data-hint="The reading mentions two cities where galleries and auction houses are mostly found. This is the second one. It is the capital city of the United Kingdom."></span>
+        </span>
+        , then maybe a lot of art from other places gets
+        <span class="gap-wrap" data-id="p3g8">
+          <input class="gap-input" id="p3g8" data-answer="excluded" data-part="3" data-attempts="0" size="9">
+          <span class="letter-hint" data-original="e______d">(e______d)</span>
+          <span class="gap-hint" data-hint="If you are included in something, you are part of it. This word is the opposite. If you are ___, you are left out. The prefix ex- means out or away."></span>
+        </span>
+        .
+      </div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">So Danto explains how the system works, but he doesn't really say whether the system is
+        <span class="gap-wrap" data-id="p3g9">
+          <input class="gap-input" id="p3g9" data-answer="fair" data-part="3" data-attempts="0" size="6">
+          <span class="letter-hint" data-original="f__r">(f__r)</span>
+          <span class="gap-hint" data-hint="If a system treats everyone equally and nobody is left out, we say it is ___. Think about sport: if the referee follows the rules for both teams, the game is ___."></span>
+        </span>
+        or not.
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkPart(3)">Check Part 3</button>
+    <div class="feedback-bar" id="fbp3"></div>
+
+    <!-- PART 4 -->
+    <div class="part-header" style="margin-top:32px;">Part 4 · Your Turn — Write the Final Exchange</div>
+    <div class="free-prompt">Write the final part of the conversation in your own words. Use the sentence starters below. You must use the words: <span class="must-use"><span>Artworld</span> <span>context</span> <span>institution</span></span> and at least one example from the reading.</div>
+
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text" style="flex-direction:column; align-items:flex-start;">
+        <span style="color:var(--muted); font-style:italic; font-size:13px; margin-bottom:6px;"><span class="starter-chip">Starter</span> "Personally, I completely agree / disagree with Danto because..."</span>
+        <textarea class="evidence-textarea" rows="3" placeholder="Write Student A's opinion here..." style="margin-top:4px;"></textarea>
+      </div>
+    </div>
+    <div class="script-line" style="margin-top:4px;">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text" style="flex-direction:column; align-items:flex-start;">
+        <span style="color:var(--muted); font-style:italic; font-size:13px; margin-bottom:6px;"><span class="starter-chip">Starter</span> "That's interesting, but I would argue / I'd push back on that because..."</span>
+        <textarea class="evidence-textarea" rows="3" placeholder="Write Student B's response here..." style="margin-top:4px;"></textarea>
+      </div>
+    </div>
+    <div class="script-line" style="margin-top:4px;">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text" style="flex-direction:column; align-items:flex-start;">
+        <span style="color:var(--muted); font-style:italic; font-size:13px; margin-bottom:6px;"><span class="starter-chip">Starter</span> "OK, but what about the example of... which shows that..."</span>
+        <textarea class="evidence-textarea" rows="3" placeholder="Write Student A's follow-up here..." style="margin-top:4px;"></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:14px; font-size:13px; color:var(--muted); font-style:italic;">This section cannot be auto-marked. Compare your exchange with your group before joining your partner from Team Hall.</div>
+  </div>
+
+  <!-- JIGSAW REMINDER -->
+  <div class="jigsaw-reminder" id="jigsawReminder" style="display:none;">
+    <span class="tick">✓</span>
+    <span>All activities complete. Compare your answers with your group, then find a student from <strong>Team Hall</strong> and teach each other your theories.</span>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── STATE ────────────────────────────────────────────────────────────────────
+let act1Done = false;
+let act2Done = false;
+let act3p1Done = false;
+let act3p2Done = false;
+let act3p3Done = false;
+const partAttempts = { 1: 0, 2: 0, 3: 0 };
+const matchAttempts = {};
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function norm(s) { return s.trim().toLowerCase().replace(/[^a-z0-9, ]/g, ''); }
+
+function showFeedback(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = 'feedback-bar ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function updateProgress() {
+  const done = [act1Done, act2Done, act3p1Done && act3p2Done && act3p3Done].filter(Boolean).length;
+  // count part 3 of act3 as full act3
+  const total = 4; // act1, act2, part1, part2+3
+  const pct = Math.round((done / 3) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = done + ' / 3';
+}
+
+function unlock(bodyId) {
+  const el = document.getElementById(bodyId);
+  if (el) el.classList.remove('section-locked');
+}
+
+// ── ACTIVITY 1: MATCH ────────────────────────────────────────────────────────
+function checkActivity1() {
+  const inputs = document.querySelectorAll('.match-letter-input');
+  let allCorrect = true;
+
+  inputs.forEach(inp => {
+    const val = inp.value.trim().toUpperCase();
+    const ans = inp.dataset.answer.toUpperCase();
+    const id = inp.id;
+    if (!matchAttempts[id]) matchAttempts[id] = 0;
+
+    if (val === ans) {
+      inp.classList.remove('incorrect');
+      inp.classList.add('correct');
+    } else {
+      inp.classList.remove('correct');
+      inp.classList.add('incorrect');
+      allCorrect = false;
+      matchAttempts[id]++;
+    }
+  });
+
+  if (allCorrect) {
+    showFeedback('fb1', 'success', '✓ All correct! Well done. Move on to Activity 2.');
+    act1Done = true;
+    unlock('act2body');
+    updateProgress();
+  } else {
+    const wrong = [...inputs].filter(i => i.classList.contains('incorrect')).length;
+    showFeedback('fb1', wrong === 1 ? 'partial' : 'error',
+      wrong + ' answer' + (wrong > 1 ? 's' : '') + ' incorrect. Re-read the relevant paragraphs and try again. Remember to note which words guided your choice.');
+  }
+}
+
+// ── ACTIVITY 2: FACTS ────────────────────────────────────────────────────────
+const factAnswers = {
+  f1: ['1964'],
+  f2: ['columbia', 'columbia university'],
+  f3: ['nation', 'the nation', 'twenty', '20'],
+  f4: ['brillo', 'brillo boxes', 'warhol', 'andy warhol'],
+  f5: ['1998', '1999'],
+  f6: ['2,546,500', '2546500', '2014'],
+  f7: ['dickie', 'george dickie']
+};
+
+function checkActivity2() {
+  let allOk = true;
+  Object.keys(factAnswers).forEach(id => {
+    const el = document.getElementById(id);
+    const val = norm(el.value);
+    const hits = factAnswers[id].some(a => val.includes(norm(a)));
+    el.style.borderColor = hits ? 'var(--green)' : 'var(--red)';
+    if (!hits) allOk = false;
+  });
+
+  if (allOk) {
+    showFeedback('fb2', 'success', '✓ Great work finding the facts. Move on to Activity 3.');
+    act2Done = true;
+    unlock('act3body');
+    updateProgress();
+  } else {
+    showFeedback('fb2', 'partial', 'Some answers need reviewing. Re-read the text for the highlighted questions.');
+  }
+}
+
+// ── ACTIVITY 3: GAP FILL ─────────────────────────────────────────────────────
+function revealLetter(hintEl, position, answer) {
+  // Reveal letter at 'position' (0-indexed) inside the bracket pattern
+  const current = hintEl.textContent;
+  hintEl.textContent = current.replace(/\(([^)]+)\)/, (_, inner) => {
+    const chars = inner.split('');
+    if (chars[position] !== undefined && answer[position]) {
+      chars[position] = answer[position].toUpperCase();
+    }
+    return '(' + chars.join('') + ')';
+  });
+}
+
+function checkPart(n) {
+  const inputs = document.querySelectorAll(`[data-part="${n}"]`);
+  partAttempts[n]++;
+  let allCorrect = true;
+  let anyNear = false;
+
+  inputs.forEach(inp => {
+    if (inp.classList.contains('correct')) return; // skip already-correct gaps
+
+    const val = norm(inp.value);
+    const ans = norm(inp.dataset.answer);
+    const root = inp.dataset.root ? norm(inp.dataset.root) : null;
+
+    inp.classList.remove('incorrect', 'near');
+
+    if (val === ans || (root && val === root)) {
+      inp.classList.add('correct');
+    } else if (n === 2 && root && (val.includes(root) || root.includes(val) || levenshtein(val, root) <= 2)) {
+      inp.classList.add('near');
+      allCorrect = false;
+      anyNear = true;
+    } else {
+      inp.classList.add('incorrect');
+      allCorrect = false;
+
+      if (n === 3) {
+        const attempts = parseInt(inp.dataset.attempts || 0) + 1;
+        inp.dataset.attempts = attempts;
+        const answer = inp.dataset.answer;
+        const wrap = inp.closest('.gap-wrap');
+        if (wrap) {
+          const hintEl = wrap.querySelector('.letter-hint');
+          const hintSentence = wrap.querySelector('.gap-hint');
+
+          // Attempt 3: reveal 2nd letter
+          if (attempts === 3 && hintEl && answer.length > 1) {
+            revealLetter(hintEl, 1, answer);
+            hintEl.classList.add('revealed-2');
+          }
+          // Attempt 4: reveal 3rd letter
+          if (attempts === 4 && hintEl && answer.length > 2) {
+            revealLetter(hintEl, 2, answer);
+            hintEl.classList.add('revealed-3');
+          }
+          // Attempt 5: show hint sentence
+          if (attempts >= 5 && hintSentence) {
+            hintSentence.textContent = hintSentence.dataset.hint;
+            hintSentence.classList.add('visible');
+          }
+        }
+      }
+    }
+  });
+
+  const fbId = 'fbp' + n;
+  if (allCorrect) {
+    showFeedback(fbId, 'success', '✓ All correct! ' + (n < 3 ? 'Move on to Part ' + (n+1) + '.' : 'Well done. Now complete Part 4.'));
+    if (n === 1) act3p1Done = true;
+    if (n === 2) act3p2Done = true;
+    if (n === 3) { act3p3Done = true; updateProgress(); document.getElementById('jigsawReminder').style.display = 'flex'; }
+  } else if (anyNear) {
+    showFeedback(fbId, 'partial', 'Yellow gaps have the right base word but the wrong form — check tense, plural, or suffix.');
+  } else {
+    const wrong = [...inputs].filter(i => i.classList.contains('incorrect')).length;
+    let msg = wrong + ' gap' + (wrong > 1 ? 's' : '') + ' still incorrect.';
+    const p3 = partAttempts[n];
+    if (n === 3) {
+      if (p3 === 3) msg += ' The second letter is now showing for incorrect gaps.';
+      else if (p3 === 4) msg += ' The third letter is now showing for incorrect gaps.';
+      else if (p3 >= 5) msg += ' A hint sentence is now showing below each incorrect gap.';
+    }
+    showFeedback(fbId, 'error', msg);
+  }
+}
+
+// Simple Levenshtein for near-match detection
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m+1}, (_, i) => Array.from({length: n+1}, (_, j) => i === 0 ? j : j === 0 ? i : 0));
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+    dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+// Uppercase match inputs
+document.querySelectorAll('.match-letter-input').forEach(inp => {
+  inp.addEventListener('input', () => { inp.value = inp.value.toUpperCase(); });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkActivity1(); });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Hall | HUMN 110 Lesson 4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --teal: #0D5C63;
+    --teal2: #1A7A84;
+    --cream: #F0F5F4;
+    --lightbg: #E0ECEB;
+    --gold: #C49A10;
+    --muted: #4A6868;
+    --black: #0A1A1A;
+    --white: #FFFFFF;
+    --green: #2D6A4F;
+    --green-light: #D8F3DC;
+    --red: #9B2226;
+    --red-light: #FFCCD5;
+    --yellow: #B5820A;
+    --yellow-light: #FFF3CD;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--black); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+
+  .doc-header { background: var(--teal); color: var(--white); padding: 36px 40px 28px; margin: 0 -24px 0; position: relative; }
+  .doc-header::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--gold); }
+  .doc-header .tag { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 8px; }
+  .doc-header h1 { font-family: 'EB Garamond', serif; font-size: 38px; font-weight: 600; line-height: 1.2; margin-bottom: 6px; }
+  .doc-header .subtitle { font-family: 'EB Garamond', serif; font-size: 18px; color: rgba(255,255,255,0.75); font-style: italic; }
+  .doc-header .mission { margin-top: 16px; background: rgba(255,255,255,0.12); border-left: 3px solid var(--gold); padding: 10px 16px; font-size: 14px; color: rgba(255,255,255,0.9); border-radius: 0 4px 4px 0; }
+
+  .section-header { background: var(--teal2); color: var(--white); padding: 10px 20px; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 36px 0 0; border-radius: 3px 3px 0 0; }
+  .section-body { background: var(--white); border: 1px solid #B8D0CE; border-top: none; padding: 24px 28px; border-radius: 0 0 3px 3px; margin-bottom: 4px; }
+  .section-instruction { font-size: 13px; color: var(--muted); font-style: italic; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #C8DCDA; }
+
+  .para-block { margin-bottom: 22px; }
+  .para-block p { font-size: 15px; line-height: 1.8; color: var(--black); }
+
+  .quote-block { margin: 20px 0; padding: 16px 20px; background: var(--lightbg); border-left: 4px solid var(--gold); border-radius: 0 4px 4px 0; }
+  .quote-block .quote-text { font-family: 'EB Garamond', serif; font-size: 17px; font-style: italic; color: var(--teal); line-height: 1.6; }
+  .quote-block .quote-source { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+  .references { margin-top: 32px; padding-top: 20px; border-top: 2px solid var(--teal); }
+  .references h3 { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); margin-bottom: 12px; }
+  .references p { font-size: 13px; color: var(--muted); line-height: 1.7; padding-left: 32px; text-indent: -32px; margin-bottom: 8px; }
+
+  .activity-header { display: flex; align-items: center; gap: 14px; background: var(--teal); padding: 12px 20px; margin: 36px 0 0; border-radius: 3px 3px 0 0; }
+  .activity-num { background: var(--gold); color: var(--black); font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 3px 10px; border-radius: 2px; white-space: nowrap; }
+  .activity-title { color: var(--white); font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+  .activity-body { background: var(--white); border: 1px solid #B8D0CE; border-top: none; padding: 24px 28px; border-radius: 0 0 3px 3px; }
+
+  .word-bank { background: var(--lightbg); border: 1px solid #A8C8C6; border-radius: 4px; padding: 14px 18px; margin-bottom: 22px; }
+  .word-bank-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; }
+  .word-bank-note { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 10px; }
+  .word-bank-words { display: flex; flex-wrap: wrap; gap: 8px; }
+  .word-chip { background: var(--white); border: 1.5px solid var(--teal); color: var(--teal); font-size: 13px; font-weight: 600; padding: 4px 12px; border-radius: 20px; }
+
+  .match-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .match-table tr:nth-child(odd) td { background: var(--lightbg); }
+  .match-table tr:nth-child(even) td { background: var(--white); }
+  .match-table td { padding: 10px 14px; font-size: 14px; vertical-align: middle; }
+  .match-table .num { font-weight: 700; color: var(--teal); width: 32px; text-align: center; }
+  .match-table .answer-col { width: 130px; }
+  .match-input-wrap { display: flex; align-items: center; gap: 8px; }
+  .match-letter-input { width: 42px; border: 2px solid #A8C8C6; border-radius: 4px; padding: 6px 8px; font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 700; text-align: center; text-transform: uppercase; background: var(--white); transition: border-color 0.2s; }
+  .match-letter-input:focus { outline: none; border-color: var(--teal); }
+  .match-letter-input.correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .match-letter-input.incorrect { border-color: var(--red); background: var(--red-light); color: var(--red); }
+
+  .evidence-label { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; margin-top: 12px; }
+  .evidence-textarea { width: 100%; border: 1.5px solid #A8C8C6; border-radius: 4px; padding: 10px 12px; font-size: 14px; font-family: 'Inter', sans-serif; resize: vertical; min-height: 60px; background: var(--cream); color: var(--black); transition: border-color 0.2s; }
+  .evidence-textarea:focus { outline: none; border-color: var(--teal); }
+
+  .part-header { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); background: var(--lightbg); padding: 7px 14px; margin: 24px 0 12px; border-radius: 3px; border-left: 4px solid var(--teal); }
+
+  .script-line { display: flex; align-items: flex-start; gap: 0; margin-bottom: 4px; }
+  .speaker { width: 36px; min-width: 36px; font-weight: 700; font-size: 14px; padding: 11px 0 11px 14px; color: var(--white); }
+  .speaker.a-speaker { background: var(--teal); }
+  .speaker.b-speaker { background: var(--teal2); }
+  .line-text { flex: 1; padding: 10px 14px; font-size: 14px; line-height: 1.7; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+  .script-line:nth-child(odd) .line-text { background: var(--lightbg); }
+  .script-line:nth-child(even) .line-text { background: var(--white); }
+
+  .gap-input { border: none; border-bottom: 2px solid var(--teal); background: transparent; font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 600; color: var(--teal); padding: 2px 6px; min-width: 90px; text-align: center; transition: all 0.2s; }
+  .gap-input:focus { outline: none; border-bottom-color: var(--gold); }
+  .gap-input.correct { border-bottom-color: var(--green); color: var(--green); background: var(--green-light); border-radius: 3px; }
+  .gap-input.incorrect { border-bottom-color: var(--red); color: var(--red); background: var(--red-light); border-radius: 3px; }
+  .gap-input.near { border-bottom-color: var(--yellow); color: var(--yellow); background: var(--yellow-light); border-radius: 3px; }
+  .gap-input.hint-revealed { border-bottom-style: dashed; }
+
+  .gap-wrap { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; }
+  .letter-hint { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 2px; transition: color 0.3s; }
+  .letter-hint.revealed-2 { color: var(--gold); font-weight: 700; }
+  .letter-hint.revealed-3 { color: var(--teal); font-weight: 700; }
+  .gap-hint { display: none; font-size: 12px; color: var(--white); background: var(--teal); border-radius: 4px; padding: 5px 10px; margin-top: 4px; max-width: 260px; line-height: 1.5; text-align: center; }
+  .gap-hint.visible { display: block; }
+
+  .check-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--teal); color: var(--white); border: none; padding: 10px 22px; border-radius: 4px; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; margin-top: 20px; transition: background 0.2s; }
+  .check-btn:hover { background: var(--teal2); }
+
+  .feedback-bar { margin-top: 14px; padding: 10px 16px; border-radius: 4px; font-size: 13px; font-weight: 600; display: none; }
+  .feedback-bar.success { background: var(--green-light); color: var(--green); border: 1px solid var(--green); }
+  .feedback-bar.partial { background: var(--yellow-light); color: var(--yellow); border: 1px solid var(--yellow); }
+  .feedback-bar.error { background: var(--red-light); color: var(--red); border: 1px solid var(--red); }
+
+  .section-locked { opacity: 0.4; pointer-events: none; position: relative; }
+  .section-locked::after { content: 'Complete the previous activity to unlock'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: var(--muted); background: rgba(240,245,244,0.7); border-radius: 0 0 3px 3px; }
+
+  .free-prompt { background: var(--lightbg); border-left: 4px solid var(--gold); padding: 12px 16px; margin-bottom: 16px; border-radius: 0 4px 4px 0; font-size: 14px; font-style: italic; color: var(--muted); }
+  .starter-chip { display: inline-block; background: var(--teal); color: var(--white); font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 3px; margin-right: 6px; font-style: normal; }
+  .must-use span { font-style: normal; font-weight: 600; color: var(--teal); background: var(--lightbg); padding: 1px 6px; border-radius: 3px; margin: 0 2px; }
+
+  .progress-bar-wrap { position: sticky; top: 0; background: var(--teal); z-index: 100; padding: 8px 28px; display: flex; align-items: center; gap: 14px; }
+  .progress-label { color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
+  .progress-track { flex: 1; background: rgba(255,255,255,0.2); border-radius: 10px; height: 6px; }
+  .progress-fill { background: var(--gold); height: 6px; border-radius: 10px; transition: width 0.4s; width: 0%; }
+
+  .jigsaw-reminder { margin-top: 40px; background: var(--teal); color: var(--white); padding: 18px 24px; border-radius: 4px; font-size: 14px; display: flex; align-items: flex-start; gap: 14px; }
+  .jigsaw-reminder .tick { font-size: 22px; color: var(--gold); }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap">
+  <span class="progress-label">TEAM HALL</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-label" id="progressText">0 / 3</span>
+</div>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="tag">HUMN 110 · Arts and Culture · Lesson 4</div>
+    <h1>Team Hall</h1>
+    <div class="subtitle">Stuart Hall and Encoding / Decoding Theory</div>
+    <div class="mission">Your job: become the expert. You will teach this theory to a partner who has read something completely different.</div>
+  </div>
+
+  <!-- READING -->
+  <div class="section-header">The Reading</div>
+  <div class="section-body">
+    <div class="section-instruction">Read the six paragraphs below carefully. You have 8 minutes.</div>
+
+    <div class="para-block">
+      <p>Stuart Hall was a cultural theorist and sociologist born in Kingston, Jamaica, in 1932. He moved to Britain in 1951 on a Rhodes Scholarship to study at Oxford, and went on to become one of the most important thinkers in cultural studies in the twentieth century. He was a founding member of the Centre for Contemporary Cultural Studies at the University of Birmingham, and later a professor at the Open University. Hall was deeply interested in questions of race, power, representation, and how meaning is made in society. He died in 2014. His work was shaped by his own experience as a Black Caribbean man living and working in Britain, which gave him a sharp awareness of how identity and cultural background affect how people see the world.</p>
+    </div>
+
+    <div class="para-block">
+      <p>Hall was writing at a time when most communication scholars assumed that meaning was fixed and straightforward, that a message sent by a broadcaster or artist would be received by the audience in exactly the way it was intended. Hall rejected this completely. He observed that the same news broadcast, the same film, or the same artwork could be understood in completely different ways by different people. A message about immigration, for example, might be intended to create sympathy, and yet one viewer might feel sympathetic, while another might feel angry, and a third might reject the entire framing. Hall wanted to explain why this happened, and he did so with his theory of encoding and decoding, published in 1980.</p>
+    </div>
+
+    <div class="para-block">
+      <p>Hall argued that all communication involves two separate but related processes. First, an artist, broadcaster, or media producer encodes a message: they choose words, images, sounds, and structures to express a particular meaning. This encoding is always shaped by the producer's own cultural assumptions, ideology, and intent. Second, an audience member decodes the message: they interpret it through their own cultural lens. The crucial insight is that encoding and decoding are not mirror images of each other. The meaning a producer intends and the meaning an audience takes away are often completely different. The gap between them is where culture, power, and identity operate.</p>
+    </div>
+
+    <div class="quote-block">
+      <div class="quote-text">"There is no intelligible discourse without the operation of a code. Encoding always assumes decoding, just as decoding always presupposes encoding."</div>
+      <div class="quote-source">Hall (1980, p. 128)</div>
+    </div>
+
+    <div class="para-block">
+      <p>Hall identified three positions from which an audience can decode a message. In the dominant or preferred reading, the viewer accepts the message largely as it was intended. They share enough of the producer's cultural assumptions to read it the same way. In the negotiated reading, the viewer partly accepts and partly questions the message. They understand the intended meaning but apply their own exceptions, local conditions, or personal experience to modify it. In the oppositional reading, the viewer understands the intended message perfectly well, but rejects it entirely. They decode it from a completely different cultural framework, one that conflicts with the producer's assumptions. Hall was careful to point out that oppositional readings are not misreadings: they are valid interpretations from a different cultural position.</p>
+    </div>
+
+    <div class="para-block">
+      <p>Tracey Emin's <em>My Bed</em> (1998) offers a powerful case study for Hall's theory. Emin encoded the work with very specific intentions: it was a document of a personal breakdown, a statement about female vulnerability, depression, and survival. A viewer who accepts this framing and finds it moving, honest, and important is taking a dominant reading. A viewer who thinks it is interesting as a concept but finds the personal details uncomfortable or excessive is taking a negotiated reading: they partly accept the art, but negotiate its terms. A viewer who sees an unmade bed with empty bottles and used tissues and says, "This is not art, this is a mess, and I am being fooled," is taking an oppositional reading. Crucially, Hall would say all three readers are responding rationally from their own cultural positions (Tate, 2015).</p>
+    </div>
+
+    <div class="para-block">
+      <p>Hall's encoding/decoding model has had enormous influence on media studies, cultural studies, and the study of art and communication. It shifted attention from the producer's intention to the audience's interpretation, and it recognised that audiences are not passive receivers but active participants who bring their own histories, cultures, and identities to every text they encounter. This is especially powerful in a global, multicultural context: a work of art created in London will be decoded very differently by a viewer in Phnom Penh, Lagos, or Tokyo, not because one reading is right and another wrong, but because different cultural positions produce different but equally valid meanings. Hall gave us the language to talk about these differences without ranking them.</p>
+    </div>
+
+    <div class="references">
+      <h3>References</h3>
+      <p>Emin, T. (1998). <em>My bed</em> [Installation]. Tate Britain, London, United Kingdom.</p>
+      <p>Hall, S. (1980). Encoding/decoding. In S. Hall, D. Hobson, A. Lowe, & P. Willis (Eds.), <em>Culture, media, language</em> (pp. 128–138). Hutchinson.</p>
+      <p>Tate. (2015, April 2). <em>Tracey Emin on My Bed</em> [Video]. YouTube. https://www.youtube.com/watch?v=uv04ewpiqSc</p>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 1 -->
+  <div class="activity-header">
+    <span class="activity-num">ACTIVITY 1</span>
+    <span class="activity-title">Match the Subheadings</span>
+  </div>
+  <div class="activity-body" id="act1body">
+    <div class="section-instruction">The six subheadings below belong to the six paragraphs you just read, but they have been separated and shuffled. Match each subheading to its correct paragraph by writing the letter (A–F) in the box. <strong>Important:</strong> before you check, note which words or sentences in the paragraph guided your choice.</div>
+
+    <table class="match-table">
+      <tr><td class="num">1</td><td>Why Hall's Theory Matters Today</td><td class="answer-col"><div class="match-input-wrap"><input class="match-letter-input" type="text" maxlength="1" id="m1" data-answer="F" placeholder="?"></div></td></tr>
+      <tr><td class="num">2</td><td>The Three Decoding Positions</td><td class="answer-col"><div class="match-input-wrap"><input class="match-letter-input" type="text" maxlength="1" id="m2" data-answer="D" placeholder="?"></div></td></tr>
+      <tr><td class="num">3</td><td>The Problem Hall Was Trying to Solve</td><td class="answer-col"><div class="match-input-wrap"><input class="match-letter-input" type="text" maxlength="1" id="m3" data-answer="B" placeholder="?"></div></td></tr>
+      <tr><td class="num">4</td><td>Hall Applied: Tracey Emin's <em>My Bed</em></td><td class="answer-col"><div class="match-input-wrap"><input class="match-letter-input" type="text" maxlength="1" id="m4" data-answer="E" placeholder="?"></div></td></tr>
+      <tr><td class="num">5</td><td>Who Was Stuart Hall?</td><td class="answer-col"><div class="match-input-wrap"><input class="match-letter-input" type="text" maxlength="1" id="m5" data-answer="A" placeholder="?"></div></td></tr>
+      <tr><td class="num">6</td><td>The Theory: Encoding and Decoding</td><td class="answer-col"><div class="match-input-wrap"><input class="match-letter-input" type="text" maxlength="1" id="m6" data-answer="C" placeholder="?"></div></td></tr>
+    </table>
+
+    <div style="margin-top:20px;">
+      <div class="evidence-label">Before you check: what words or sentences guided each choice? Note them here.</div>
+      <textarea class="evidence-textarea" rows="3" placeholder="e.g. Subheading 5 — I chose A because the paragraph mentions Kingston, Jamaica and 1932..."></textarea>
+    </div>
+
+    <button class="check-btn" onclick="checkActivity1()">Check My Answers</button>
+    <div class="feedback-bar" id="fb1"></div>
+  </div>
+
+  <!-- ACTIVITY 2 -->
+  <div class="activity-header">
+    <span class="activity-num">ACTIVITY 2</span>
+    <span class="activity-title">Find the Facts</span>
+  </div>
+  <div class="activity-body section-locked" id="act2body">
+    <div class="section-instruction">The reading contains specific numbers, dates, places, and names. Hunt through the text and answer the questions below.</div>
+
+    <div class="evidence-label">1. Where was Stuart Hall born, and in what year?</div>
+    <textarea class="evidence-textarea" rows="1" id="f1" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">2. What scholarship did Hall receive to come to Britain, and where did he study?</div>
+    <textarea class="evidence-textarea" rows="1" id="f2" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">3. What was the name of the research centre Hall helped found, and at which university?</div>
+    <textarea class="evidence-textarea" rows="2" id="f3" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">4. In what year was Hall's encoding/decoding essay published?</div>
+    <textarea class="evidence-textarea" rows="1" id="f4" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">5. Name the three decoding positions Hall identified.</div>
+    <textarea class="evidence-textarea" rows="2" id="f5" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">6. When did Stuart Hall die?</div>
+    <textarea class="evidence-textarea" rows="1" id="f6" placeholder="Your answer..."></textarea>
+
+    <div class="evidence-label">7. Name three cities mentioned as examples of different cultural contexts for decoding art.</div>
+    <textarea class="evidence-textarea" rows="1" id="f7" placeholder="Your answer..."></textarea>
+
+    <button class="check-btn" onclick="checkActivity2()">Check My Answers</button>
+    <div class="feedback-bar" id="fb2"></div>
+  </div>
+
+  <!-- ACTIVITY 3 -->
+  <div class="activity-header">
+    <span class="activity-num">ACTIVITY 3</span>
+    <span class="activity-title">The Conversation — Gap Fill</span>
+  </div>
+  <div class="activity-body section-locked" id="act3body">
+    <div class="section-instruction">Two students are discussing Hall's theory. Complete the script. The conversation gets progressively freer. Check each part before moving on.</div>
+
+    <!-- PART 1 -->
+    <div class="part-header">Part 1 · What is Hall's Theory?</div>
+    <div class="word-bank">
+      <div class="word-bank-label">Word Bank</div>
+      <div class="word-bank-note">Choose the correct word from the bank below for each gap. Each word is used once.</div>
+      <div class="word-bank-words">
+        <span class="word-chip">encoding</span>
+        <span class="word-chip">decode</span>
+        <span class="word-chip">cultural</span>
+        <span class="word-chip">power</span>
+      </div>
+    </div>
+
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">So Hall's big idea is that there are two separate processes: <input class="gap-input" id="p1g1" data-answer="encoding" data-part="1" size="10"> and decoding.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">Right. The producer encodes the message, but the audience doesn't always <input class="gap-input" id="p1g2" data-answer="decode" data-part="1" size="8"> it the same way.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">Because the audience brings their own <input class="gap-input" id="p1g3" data-answer="cultural" data-part="1" size="9"> background and identity to it.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">Exactly. So the gap between what was intended and what is received, that's where culture and <input class="gap-input" id="p1g4" data-answer="power" data-part="1" size="7"> come in.</div>
+    </div>
+
+    <button class="check-btn" onclick="checkPart(1)">Check Part 1</button>
+    <div class="feedback-bar" id="fbp1"></div>
+
+    <!-- PART 2 -->
+    <div class="part-header" style="margin-top:32px;">Part 2 · The Three Positions</div>
+    <div class="word-bank">
+      <div class="word-bank-label">Word Bank</div>
+      <div class="word-bank-note">Some words may need to be changed to a different form. If you use the right word in the wrong form, you will see a yellow result.</div>
+      <div class="word-bank-words">
+        <span class="word-chip">dominant</span>
+        <span class="word-chip">negotiate</span>
+        <span class="word-chip">opposition</span>
+        <span class="word-chip">misread</span>
+        <span class="word-chip">artwork</span>
+      </div>
+    </div>
+
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">And Hall said there are three ways an audience can respond. The first is a <input class="gap-input" id="p2g1" data-answer="dominant" data-part="2" data-root="dominant" size="9"> reading: you accept the message as intended.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">Then there's <input class="gap-input" id="p2g2" data-answer="negotiated" data-part="2" data-root="negotiate" size="10">, where you partly accept it but modify it based on your own experience.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">And the third is <input class="gap-input" id="p2g3" data-answer="oppositional" data-part="2" data-root="opposition" size="12">, where you completely reject the intended message from a different cultural position.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">And Hall says the oppositional reading isn't a <input class="gap-input" id="p2g4" data-answer="misreading" data-part="2" data-root="misread" size="10">: it's just a different but valid one.</div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">Which makes sense. Someone from a completely different culture will read the same <input class="gap-input" id="p2g5" data-answer="artwork" data-part="2" data-root="artwork" size="8"> differently, and that doesn't make them wrong.</div>
+    </div>
+
+    <button class="check-btn" onclick="checkPart(2)">Check Part 2</button>
+    <div class="feedback-bar" id="fbp2"></div>
+
+    <!-- PART 3 -->
+    <div class="part-header" style="margin-top:32px;">Part 3 · Applying it to <em>My Bed</em></div>
+    <div class="word-bank">
+      <div class="word-bank-label">Letter Hints</div>
+      <div class="word-bank-note">The first and last letter of each missing word are shown beside the gap. Check 3 times without getting it right: the second letter appears. Check again: the third letter appears. Check one more time: a hint sentence appears to help you.</div>
+    </div>
+
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">So with Emin's <em>My Bed</em>, she
+        <span class="gap-wrap" data-id="p3g1">
+          <input class="gap-input" id="p3g1" data-answer="encoded" data-part="3" data-attempts="0" size="8">
+          <span class="letter-hint" data-original="e_____d">(e_____d)</span>
+          <span class="gap-hint" data-hint="This is the past tense of the key verb from Hall's theory. Hall said producers put meaning INTO a work. She did this in the past, so use the past tense."></span>
+        </span>
+        it as being about her personal breakdown and female
+        <span class="gap-wrap" data-id="p3g2">
+          <input class="gap-input" id="p3g2" data-answer="vulnerability" data-part="3" data-attempts="0" size="13">
+          <span class="letter-hint" data-original="v__________y">(v__________y)</span>
+          <span class="gap-hint" data-hint="If you can be hurt or damaged easily, you are vulnerable. This word is the noun form of that adjective. If someone is full of grace, they have grace. If someone is vulnerable, they have ___."></span>
+        </span>
+        .
+      </div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">A dominant reader would
+        <span class="gap-wrap" data-id="p3g3">
+          <input class="gap-input" id="p3g3" data-answer="accept" data-part="3" data-attempts="0" size="8">
+          <span class="letter-hint" data-original="a_____t">(a_____t)</span>
+          <span class="gap-hint" data-hint="A dominant reader agrees with the message as it was intended. Another common word for agree with and receive something is ___. The opposite is reject."></span>
+        </span>
+        that and find it honest and
+        <span class="gap-wrap" data-id="p3g4">
+          <input class="gap-input" id="p3g4" data-answer="important" data-part="3" data-attempts="0" size="9">
+          <span class="letter-hint" data-original="i_______t">(i_______t)</span>
+          <span class="gap-hint" data-hint="If something matters a lot and people should pay attention to it, it is ___. Think about the word import: to bring something in because it has value."></span>
+        </span>
+        .
+      </div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">A negotiated reader might think it is interesting as an idea but feel
+        <span class="gap-wrap" data-id="p3g5">
+          <input class="gap-input" id="p3g5" data-answer="uncomfortable" data-part="3" data-attempts="0" size="13">
+          <span class="letter-hint" data-original="u___________e">(u___________e)</span>
+          <span class="gap-hint" data-hint="If you agree with an idea fully, you could say you feel comfortable with it. A negotiated reader only partly agrees, so they feel the opposite of comfortable. The prefix un- means not."></span>
+        </span>
+        about whether it belongs in a gallery.
+      </div>
+    </div>
+    <div class="script-line">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text">And an oppositional reader might say this is not
+        <span class="gap-wrap" data-id="p3g6">
+          <input class="gap-input" id="p3g6" data-answer="art" data-part="3" data-attempts="0" size="5">
+          <span class="letter-hint" data-original="a_t">(a_t)</span>
+          <span class="gap-hint" data-hint="The oppositional reader says the bed is NOT this. It is the central subject of this whole lesson and this whole course."></span>
+        </span>
+        at all, it is just a mess, and
+        <span class="gap-wrap" data-id="p3g7">
+          <input class="gap-input" id="p3g7" data-answer="reject" data-part="3" data-attempts="0" size="7">
+          <span class="letter-hint" data-original="r____t">(r____t)</span>
+          <span class="gap-hint" data-hint="To accept something means to say yes to it and take it in. This word means the opposite: to say no and push it away. If a body rejects an organ, it refuses to accept it."></span>
+        </span>
+        the whole thing.
+      </div>
+    </div>
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text">Hall would say all three of those responses make
+        <span class="gap-wrap" data-id="p3g8">
+          <input class="gap-input" id="p3g8" data-answer="sense" data-part="3" data-attempts="0" size="7">
+          <span class="letter-hint" data-original="s___e">(s___e)</span>
+          <span class="gap-hint" data-hint="If an argument is logical and you can understand why someone thinks that way, we say it makes ___. The opposite is nonsense."></span>
+        </span>
+        given where each person is coming from
+        <span class="gap-wrap" data-id="p3g9">
+          <input class="gap-input" id="p3g9" data-answer="culturally" data-part="3" data-attempts="0" size="10">
+          <span class="letter-hint" data-original="c________y">(c________y)</span>
+          <span class="gap-hint" data-hint="This is the adverb form of the word cultural. If something happens in a quick way, it happens quickly. If someone comes from a different cultural place, they come from there ___."></span>
+        </span>
+        .
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkPart(3)">Check Part 3</button>
+    <div class="feedback-bar" id="fbp3"></div>
+
+    <!-- PART 4 -->
+    <div class="part-header" style="margin-top:32px;">Part 4 · Your Turn — Write the Final Exchange</div>
+    <div class="free-prompt">Write the final part of the conversation in your own words. Use the sentence starters below. You must use the words: <span class="must-use"><span>encoding</span> <span>decoding</span> <span>cultural position</span></span> and at least one example from the reading.</div>
+
+    <div class="script-line">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text" style="flex-direction:column; align-items:flex-start;">
+        <span style="color:var(--muted); font-style:italic; font-size:13px; margin-bottom:6px;"><span class="starter-chip">Starter</span> "Personally, I completely agree / disagree with Hall because..."</span>
+        <textarea class="evidence-textarea" rows="3" placeholder="Write Student A's opinion here..." style="margin-top:4px;"></textarea>
+      </div>
+    </div>
+    <div class="script-line" style="margin-top:4px;">
+      <div class="speaker b-speaker">B</div>
+      <div class="line-text" style="flex-direction:column; align-items:flex-start;">
+        <span style="color:var(--muted); font-style:italic; font-size:13px; margin-bottom:6px;"><span class="starter-chip">Starter</span> "That's interesting, but I would argue / I'd push back on that because..."</span>
+        <textarea class="evidence-textarea" rows="3" placeholder="Write Student B's response here..." style="margin-top:4px;"></textarea>
+      </div>
+    </div>
+    <div class="script-line" style="margin-top:4px;">
+      <div class="speaker a-speaker">A</div>
+      <div class="line-text" style="flex-direction:column; align-items:flex-start;">
+        <span style="color:var(--muted); font-style:italic; font-size:13px; margin-bottom:6px;"><span class="starter-chip">Starter</span> "OK, but what about the example of... which shows that..."</span>
+        <textarea class="evidence-textarea" rows="3" placeholder="Write Student A's follow-up here..." style="margin-top:4px;"></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:14px; font-size:13px; color:var(--muted); font-style:italic;">This section cannot be auto-marked. Compare your exchange with your group before joining your partner from Team Danto.</div>
+  </div>
+
+  <div class="jigsaw-reminder" id="jigsawReminder" style="display:none;">
+    <span class="tick">✓</span>
+    <span>All activities complete. Compare your answers with your group, then find a student from <strong>Team Danto</strong> and teach each other your theories.</span>
+  </div>
+
+</div>
+
+<script>
+let act1Done = false, act2Done = false, act3p3Done = false;
+const partAttempts = { 1: 0, 2: 0, 3: 0 };
+
+function norm(s) { return s.trim().toLowerCase().replace(/[^a-z0-9, ]/g, ''); }
+
+function showFeedback(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = 'feedback-bar ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function updateProgress() {
+  const done = [act1Done, act2Done, act3p3Done].filter(Boolean).length;
+  document.getElementById('progressFill').style.width = Math.round((done/3)*100) + '%';
+  document.getElementById('progressText').textContent = done + ' / 3';
+}
+
+function unlock(id) { document.getElementById(id)?.classList.remove('section-locked'); }
+
+function checkActivity1() {
+  const inputs = document.querySelectorAll('.match-letter-input');
+  let allCorrect = true;
+  inputs.forEach(inp => {
+    const val = inp.value.trim().toUpperCase();
+    inp.classList.remove('correct','incorrect');
+    if (val === inp.dataset.answer) { inp.classList.add('correct'); }
+    else { inp.classList.add('incorrect'); allCorrect = false; }
+  });
+  if (allCorrect) {
+    showFeedback('fb1','success','✓ All correct! Move on to Activity 2.');
+    act1Done = true; unlock('act2body'); updateProgress();
+  } else {
+    const wrong = [...inputs].filter(i=>i.classList.contains('incorrect')).length;
+    showFeedback('fb1','error', wrong + ' answer' + (wrong>1?'s':'') + ' incorrect. Re-read the paragraphs and try again.');
+  }
+}
+
+const factAnswers = {
+  f1: ['kingston','jamaica','1932'],
+  f2: ['rhodes','oxford'],
+  f3: ['centre for contemporary cultural studies','birmingham','contemporary cultural'],
+  f4: ['1980'],
+  f5: ['dominant','negotiated','oppositional'],
+  f6: ['2014'],
+  f7: ['phnom penh','lagos','tokyo']
+};
+
+function checkActivity2() {
+  let allOk = true;
+  Object.keys(factAnswers).forEach(id => {
+    const el = document.getElementById(id);
+    const val = norm(el.value);
+    const hits = factAnswers[id].some(a => val.includes(norm(a)));
+    el.style.borderColor = hits ? 'var(--green)' : 'var(--red)';
+    if (!hits) allOk = false;
+  });
+  if (allOk) {
+    showFeedback('fb2','success','✓ Great work. Move on to Activity 3.');
+    act2Done = true; unlock('act3body'); updateProgress();
+  } else {
+    showFeedback('fb2','partial','Some answers need reviewing. Check the highlighted questions against the text.');
+  }
+}
+
+function levenshtein(a,b){const m=a.length,n=b.length,dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);return dp[m][n];}
+
+function revealLetter(hintEl, position, answer) {
+  hintEl.textContent = hintEl.textContent.replace(/\(([^)]+)\)/, (_, inner) => {
+    const chars = inner.split('');
+    if (chars[position] !== undefined && answer[position]) chars[position] = answer[position].toUpperCase();
+    return '(' + chars.join('') + ')';
+  });
+}
+
+function checkPart(n) {
+  const inputs = document.querySelectorAll(`[data-part="${n}"]`);
+  partAttempts[n]++;
+  let allCorrect = true, anyNear = false;
+
+  inputs.forEach(inp => {
+    if (inp.classList.contains('correct')) return;
+
+    const val = norm(inp.value);
+    const ans = norm(inp.dataset.answer);
+    const root = inp.dataset.root ? norm(inp.dataset.root) : null;
+    inp.classList.remove('incorrect','near');
+
+    if (val === ans || (root && val === root)) {
+      inp.classList.add('correct');
+    } else if (n === 2 && root && (val.includes(root) || root.includes(val) || levenshtein(val,root) <= 3)) {
+      inp.classList.add('near'); allCorrect = false; anyNear = true;
+    } else {
+      inp.classList.add('incorrect'); allCorrect = false;
+      if (n === 3) {
+        const attempts = parseInt(inp.dataset.attempts||0)+1;
+        inp.dataset.attempts = attempts;
+        const answer = inp.dataset.answer;
+        const wrap = inp.closest('.gap-wrap');
+        if (wrap) {
+          const hintEl = wrap.querySelector('.letter-hint');
+          const hintSentence = wrap.querySelector('.gap-hint');
+          if (attempts === 3 && hintEl && answer.length > 1) {
+            revealLetter(hintEl, 1, answer);
+            hintEl.classList.add('revealed-2');
+          }
+          if (attempts === 4 && hintEl && answer.length > 2) {
+            revealLetter(hintEl, 2, answer);
+            hintEl.classList.add('revealed-3');
+          }
+          if (attempts >= 5 && hintSentence) {
+            hintSentence.textContent = hintSentence.dataset.hint;
+            hintSentence.classList.add('visible');
+          }
+        }
+      }
+    }
+  });
+
+  const fbId = 'fbp' + n;
+  if (allCorrect) {
+    showFeedback(fbId,'success','✓ All correct! ' + (n<3?'Move on to Part '+(n+1)+'.':'Well done. Now complete Part 4.'));
+    if (n === 3) { act3p3Done = true; updateProgress(); document.getElementById('jigsawReminder').style.display='flex'; }
+  } else if (anyNear) {
+    showFeedback(fbId,'partial','Yellow gaps have the right base word but the wrong form. Check tense, plural, or suffix.');
+  } else {
+    const wrong = [...inputs].filter(i=>i.classList.contains('incorrect')).length;
+    let msg = wrong + ' gap' + (wrong>1?'s':'') + ' still incorrect.';
+    const p3 = partAttempts[n];
+    if (n===3) {
+      if (p3===3) msg += ' The second letter is now showing for incorrect gaps.';
+      else if (p3===4) msg += ' The third letter is now showing for incorrect gaps.';
+      else if (p3>=5) msg += ' A hint sentence is now showing below each incorrect gap.';
+    }
+    showFeedback(fbId,'error',msg);
+  }
+}
+
+document.querySelectorAll('.match-letter-input').forEach(inp => {
+  inp.addEventListener('input', () => { inp.value = inp.value.toUpperCase(); });
+  inp.addEventListener('keydown', e => { if(e.key==='Enter') checkActivity1(); });
+});
+</script>
+</body>
+</html>
