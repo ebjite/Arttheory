@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DECODE THE SIGNAL — Group 8</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #080c0c;
+    --bg2: #0e1614;
+    --bg3: #141f1c;
+    --border: #1e3330;
+    --amber: #E8A020;
+    --cream: #F0EBE0;
+    --sage: #7DB5A0;
+    --rust: #C0522A;
+    --dim: #4a6660;
+    --pk: #9B6BB5;
+    --text: #cdd8d5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* SCANLINE overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .top-bar {
+    background: #000;
+    border-bottom: 2px solid var(--pk);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .top-bar .classified {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--pk);
+    letter-spacing: 3px;
+    animation: blink 2s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .top-bar .group-id {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--cream);
+    letter-spacing: 2px;
+  }
+
+  .timer-bar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .timer-display {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 28px;
+    color: var(--amber);
+    letter-spacing: 2px;
+    min-width: 80px;
+  }
+
+  .timer-display.warning { color: var(--rust); animation: blink 0.5s step-end infinite; }
+
+  .timer-btns { display: flex; gap: 8px; }
+
+  .btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border: 1px solid;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 2px;
+  }
+
+  .btn-start { color: var(--sage); border-color: var(--sage); }
+  .btn-start:hover { background: var(--sage); color: #000; }
+  .btn-reset { color: var(--dim); border-color: var(--dim); }
+  .btn-reset:hover { background: var(--border); }
+
+  .mission-banner {
+    background: linear-gradient(135deg, var(--bg2) 0%, #0a1510 100%);
+    border: 1px solid var(--pk);
+    border-left: 4px solid var(--pk);
+    margin: 16px;
+    padding: 16px;
+    border-radius: 2px;
+  }
+
+  .mission-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--pk);
+    margin-bottom: 6px;
+  }
+
+  .mission-text {
+    font-size: 14px;
+    color: var(--cream);
+    line-height: 1.7;
+  }
+
+  .mission-text strong { color: var(--pk); }
+
+  section {
+    margin: 0 16px 20px;
+  }
+
+  .section-header {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: var(--dim);
+    padding: 10px 0 6px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .section-header .badge {
+    font-size: 9px;
+    padding: 2px 8px;
+    border: 1px solid var(--dim);
+    border-radius: 10px;
+    letter-spacing: 2px;
+  }
+
+  /* KEYS */
+  .key-card {
+    border: 1px solid var(--key-colour);
+    border-radius: 3px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .key-card.primary {
+    border-width: 2px;
+    box-shadow: 0 0 20px rgba(var(--key-colour-rgb, 232,160,32), 0.15);
+  }
+
+  .key-header {
+    background: color-mix(in srgb, var(--key-colour) 15%, var(--bg2));
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .key-id {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--key-colour);
+    font-weight: bold;
+  }
+
+  .key-theorist {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cream);
+  }
+
+  .primary-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #000;
+    background: var(--key-colour);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: auto;
+  }
+
+  .secondary-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--key-colour);
+    border: 1px solid var(--key-colour);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: auto;
+  }
+
+  .key-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--key-colour);
+    padding: 6px 14px 2px;
+  }
+
+  .key-questions {
+    padding: 8px 14px 12px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .key-questions li {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .key-card.secondary .key-header {
+    background: var(--bg2);
+  }
+
+  .keys-collapsed .key-card.secondary,
+  .keys-collapsed .key-card:not(.primary):not(.secondary) {
+    display: none;
+  }
+
+  .toggle-keys {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: 6px;
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .toggle-keys:hover { color: var(--text); }
+
+  /* POEM */
+  .poem-container {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 16px;
+    font-family: 'Barlow', sans-serif;
+  }
+
+  .poem-line {
+    padding: 3px 0;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s, background 0.2s;
+    border-radius: 2px;
+    padding: 4px 6px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .poem-line:hover {
+    background: rgba(255,255,255,0.03);
+    border-color: var(--border);
+  }
+
+  .poem-line.flagged {
+    background: color-mix(in srgb, var(--pk) 12%, transparent);
+    border-color: var(--pk);
+  }
+
+  .line-text {
+    font-style: italic;
+    color: var(--cream);
+    font-size: 14px;
+    line-height: 1.7;
+    flex: 1;
+  }
+
+  .hint {
+    font-size: 11px;
+    color: var(--dim);
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-style: normal;
+    margin-top: 4px;
+  }
+
+  .poem-line.flagged .hint { color: var(--pk); }
+
+  .poem-gap { height: 10px; }
+
+  .poem-instructions {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .flagged-count {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--pk);
+    letter-spacing: 2px;
+    text-align: right;
+    margin-top: 8px;
+  }
+
+  /* REPORT FORM */
+  .report-form {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .report-form-header {
+    background: linear-gradient(90deg, var(--bg3), #0a1510);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--pk);
+  }
+
+  .form-field {
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+  }
+
+  .form-field:last-child { border-bottom: none; }
+
+  .field-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--pk);
+    margin-bottom: 4px;
+  }
+
+  .field-prompt {
+    font-size: 12px;
+    color: var(--dim);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--cream);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 10px;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--pk);
+  }
+
+  textarea::placeholder {
+    color: var(--dim);
+    font-style: italic;
+  }
+
+  .submit-area {
+    padding: 16px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    background: var(--bg3);
+  }
+
+  .btn-submit {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    padding: 12px 32px;
+    background: var(--pk);
+    color: #000;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .btn-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+
+  .submit-note {
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  .present-section {
+    background: color-mix(in srgb, var(--pk) 10%, var(--bg2));
+    border: 2px solid var(--pk);
+    border-radius: 3px;
+    padding: 16px;
+  }
+
+  .present-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: var(--pk);
+    margin-bottom: 10px;
+  }
+
+  .present-rules li {
+    font-size: 13px;
+    color: var(--cream);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .present-rules li:last-child { border-bottom: none; }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--pk);
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    border-radius: 2px;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span class="classified">⬛ CLASSIFIED ⬛</span>
+  <span class="group-id">GROUP 8</span>
+  <span class="classified">OPERATION: VOICES CARRY</span>
+</div>
+
+<div class="timer-bar">
+  <div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--dim);margin-bottom:2px">MISSION TIME</div>
+    <div class="timer-display" id="timer">08:00</div>
+  </div>
+  <div class="timer-btns">
+    <button class="btn btn-start" onclick="startTimer()">▶ START</button>
+    <button class="btn btn-reset" onclick="resetTimer()">↺ RESET</button>
+  </div>
+</div>
+
+<div class="mission-banner">
+  <div class="mission-title">// ANALYST BRIEFING — GROUP 8 //</div>
+  <div class="mission-text">
+    Your team has intercepted a transmission. The source: <strong>Kosal Khiev</strong> — spoken word artist, former detainee, deported national, cultural ambassador.<br><br>
+    The transmission is encoded — not in cipher, but in <strong>metaphor, image and cultural reference</strong>. Your primary decryption key is <strong>Key D (bell hooks (2009))</strong>. Use it to crack the poem.<br><br>
+    You have <strong>8 minutes</strong>. Every analyst must speak in the 2-minute class presentation.
+  </div>
+</div>
+
+<section>
+  <div class="section-header">
+    DECRYPTION KEYS
+    <span class="badge">TAP TO EXPAND</span>
+  </div>
+
+  <div id="keysContainer">
+    
+    <div class="key-card primary" style="--key-colour: #9B6BB5">
+        <div class="key-header">
+            <span class="key-id">KEY D</span>
+            <span class="key-theorist">bell hooks (2009)</span>
+            <span class="primary-badge">YOUR PRIMARY KEY</span>
+        </div>
+        <div class="key-label">HOMEPLACE & THE MARGIN</div>
+        <ul class="key-questions"><li>Where is the speaker's <strong>homeplace</strong> in this poem — or has he lost it?</li><li>Is the <strong>poem itself</strong> the homeplace?</li><li>Is he speaking <strong>from the margin</strong> — and if so, what radical possibility does he find there?</li><li>What does he <strong>preserve or resist</strong> through writing this poem?</li></ul>
+    </div>
+    
+    <div class="key-card secondary" style="--key-colour: #7DB5A0">
+        <div class="key-header">
+            <span class="key-id">KEY B</span>
+            <span class="key-theorist">Hall (1990)</span>
+            <span class="secondary-badge">SECONDARY KEY</span>
+        </div>
+        <div class="key-label">IDENTITY IN PRODUCTION</div>
+        <ul class="key-questions"><li>Is the speaker's identity <strong>fixed</strong> or always <strong>changing</strong>?</li><li>Find <strong>one line</strong> where identity seems unstable, contradictory, or in-between.</li><li>Where does the speaker seem to be caught <strong>between two versions of himself</strong>?</li><li>What does this poem tell us about whether identity is ever 'finished'?</li></ul>
+    </div>
+    
+    <div class="key-card secondary" style="--key-colour: #E8A020">
+        <div class="key-header">
+            <span class="key-id">KEY A</span>
+            <span class="key-theorist">Hall (1980)</span>
+            <span class="secondary-badge">SECONDARY KEY</span>
+        </div>
+        <div class="key-label">ENCODING / DECODING</div>
+        <ul class="key-questions"><li>What is the <strong>dominant reading</strong> this poem invites — what does a casual listener take from it?</li><li>Is there a <strong>negotiated</strong> or <strong>oppositional</strong> reading possible?</li><li>What has the poet <strong>encoded</strong> that an outsider would completely miss?</li><li>Find one image that works differently depending on who is reading it.</li></ul>
+    </div>
+    <div class="key-card secondary" style="--key-colour: #C0522A">
+        <div class="key-header">
+            <span class="key-id">KEY C</span>
+            <span class="key-theorist">Tajfel (1979)</span>
+            <span class="secondary-badge">SECONDARY KEY</span>
+        </div>
+        <div class="key-label">SOCIAL IDENTITY</div>
+        <ul class="key-questions"><li>What <strong>groups</strong> does the speaker belong to — by birth, by force, by choice?</li><li>Which groups have <strong>rejected or excluded</strong> him?</li><li>How does <strong>belonging and exclusion</strong> shape the poem's emotion?</li><li>Find the line where group identity feels most <strong>painful</strong>.</li></ul>
+    </div>
+  </div>
+
+  <button class="toggle-keys" onclick="toggleKeys()" id="toggleBtn">▼ SHOW ALL KEYS</button>
+</section>
+
+<section>
+  <div class="section-header">
+    INTERCEPTED TRANSMISSION
+    <span class="badge">TAP LINE TO FLAG</span>
+  </div>
+  <div class="poem-instructions">TAP ANY LINE TO FLAG IT AS SIGNIFICANT</div>
+  <div class="poem-container" id="poem">
+    
+        <div class="poem-line">
+            <span class="line-text">My landscape dips and drapes over soft edges.</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">Tree lines up high, past her pin needles,</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">terraforming in the forestry.</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">Sometimes wild, sometimes desolate,</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">sometimes mild, sometimes desperate.</span>
+            
+        </div>
+<div class="poem-gap"></div>
+
+        <div class="poem-line">
+            <span class="line-text">The evidence of my metal stretching vast between melodies,</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">glows like golden wheat.</span>
+            <span class="hint">💡 Khmer civilisation? Abundance of Angkor?</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">Made for harvest, let the starving come eat.</span>
+            <span class="hint">💡 Who are the starving?</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">For I speak of seasons. There's nothing new underneath the sun.</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">My son and daughter, only reasons,</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">an absolute 'why' so I must keep on breathing,</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">in order to achieve and receive the next blessing.</span>
+            
+        </div>
+<div class="poem-gap"></div>
+
+        <div class="poem-line">
+            <span class="line-text">Yes, you guessed it. The most important work is self-work.</span>
+            <span class="hint">💡 hooks — homeplace as inner labour?</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">So, I toil away in my own soil,</span>
+            <span class="hint">💡 soil / soul — both?</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">hands dirty from trauma,</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">under water is boyar,</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">cut through the fire, man, I need to breathe,</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">so light it up like bird oil.</span>
+            <span class="hint">💡 Buddhist ritual — bird oil temple offering</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">Holy smoke, wafting like solemn prayers.</span>
+            <span class="hint">💡 incense / Buddhist ceremony</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">Oaths whispered from the bottom layers,</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">mind flayers sinking to the layers from our greatness.</span>
+            
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">Say we was once kings,</span>
+            <span class="hint">💡 Khmer Empire — Angkor Wat</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">now divided by falling gods,</span>
+            <span class="hint">💡 Khmer Rouge — 'falling gods'?</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">can you hear applause?</span>
+            <span class="hint">💡 irony?</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">They never meant to save us.</span>
+            <span class="hint">💡 US deportation policy</span>
+        </div>
+
+        <div class="poem-line">
+            <span class="line-text">They never meant to save us.</span>
+            
+        </div>
+  </div>
+  <div class="flagged-count" id="flaggedCount">0 LINES FLAGGED</div>
+</section>
+
+<section>
+  <div class="section-header">
+    DECODED INTELLIGENCE REPORT
+    <span class="badge">GROUP 8 · KEY D</span>
+  </div>
+
+  <div class="report-form">
+    <div class="report-form-header">// COMPLETE BEFORE TIMER ENDS — ALL FIELDS REQUIRED //</div>
+
+    <div class="form-field">
+      <div class="field-label">01 — THE SPEAKER'S IDENTITY</div>
+      <div class="field-prompt">Who is this person? What cultures, groups and histories do they carry?</div>
+      <textarea rows="3" placeholder="The speaker is..."></textarea>
+    </div>
+
+    <div class="form-field">
+      <div class="field-label">02 — THE ENCODED MESSAGE</div>
+      <div class="field-prompt">Using Key D (bell hooks (2009)): what is the poet actually saying beneath the words?</div>
+      <textarea rows="4" placeholder="Through the lens of bell hooks (2009), this poem says..."></textarea>
+    </div>
+
+    <div class="form-field">
+      <div class="field-label">03 — STRONGEST LINE</div>
+      <div class="field-prompt">Quote the one line your team found most powerful. Explain why — using your key.</div>
+      <textarea rows="3" placeholder="The line '...' is powerful because..."></textarea>
+    </div>
+
+    <div class="form-field">
+      <div class="field-label">04 — WHAT COULD NOT BE DECODED</div>
+      <div class="field-prompt">What question remains? What did Key D NOT help you understand?</div>
+      <textarea rows="2" placeholder="We could not decode..."></textarea>
+    </div>
+
+    <div class="form-field">
+      <div class="field-label">05 — OPENING LINE FOR PRESENTATION</div>
+      <div class="field-prompt">Write your team's first sentence for the 2-minute class presentation.</div>
+      <textarea rows="2" placeholder="Through the lens of bell hooks (2009), this poem..."></textarea>
+    </div>
+
+    <div class="submit-area">
+      <button class="btn-submit" onclick="submitReport()">TRANSMISSION COMPLETE</button>
+      <div class="submit-note">This saves your answers to your device only. Screenshot before presenting.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-header">YOUR 2-MINUTE PRESENTATION</div>
+  <div class="present-section">
+    <div class="present-title">EVERY ANALYST SPEAKS</div>
+    <ul class="present-rules" style="list-style:none;padding:0">
+      <li>🎙 Open with your team's first sentence (Field 05)</li>
+      <li>📌 Quote the strongest line (Field 03)</li>
+      <li>🔍 Explain through Key D — bell hooks (2009)</li>
+      <li>❓ End with your unanswered question (Field 04)</li>
+      <li>⏱ You have exactly 2 minutes</li>
+    </ul>
+  </div>
+</section>
+
+<footer>HUMN 110 · AUPP · SUMMER 2026 · J. MURPHY · LESSON 6</footer>
+
+<div class="toast" id="toast">REPORT SAVED ✓</div>
+
+<script>
+// ─── TIMER ───────────────────────────────────────────────
+let seconds = 480;
+let running = false;
+let interval;
+
+function pad(n) { return n.toString().padStart(2,'0'); }
+
+function updateDisplay() {
+  const m = Math.floor(seconds/60);
+  const s = seconds % 60;
+  const el = document.getElementById('timer');
+  el.textContent = pad(m) + ':' + pad(s);
+  el.className = 'timer-display' + (seconds <= 60 ? ' warning' : '');
+}
+
+function startTimer() {
+  if (running) return;
+  running = true;
+  interval = setInterval(() => {
+    if (seconds <= 0) {
+      clearInterval(interval);
+      running = false;
+      document.getElementById('timer').textContent = '00:00';
+      document.getElementById('timer').className = 'timer-display warning';
+      return;
+    }
+    seconds--;
+    updateDisplay();
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(interval);
+  running = false;
+  seconds = 480;
+  updateDisplay();
+}
+
+// ─── KEYS TOGGLE ─────────────────────────────────────────
+let keysExpanded = false;
+function toggleKeys() {
+  keysExpanded = !keysExpanded;
+  const container = document.getElementById('keysContainer');
+  const btn = document.getElementById('toggleBtn');
+  const cards = container.querySelectorAll('.key-card');
+  cards.forEach((c, i) => {
+    if (i > 1) c.style.display = keysExpanded ? 'block' : 'none';
+  });
+  btn.textContent = keysExpanded ? '▲ HIDE OTHER KEYS' : '▼ SHOW ALL KEYS';
+}
+
+// Init — hide non-primary/secondary keys
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = document.querySelectorAll('#keysContainer .key-card');
+  cards.forEach((c, i) => { if (i > 1) c.style.display = 'none'; });
+});
+
+// ─── POEM LINE FLAGGING ──────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const lines = document.querySelectorAll('.poem-line');
+  lines.forEach(line => {
+    line.addEventListener('click', () => {
+      line.classList.toggle('flagged');
+      updateFlagCount();
+    });
+  });
+});
+
+function updateFlagCount() {
+  const n = document.querySelectorAll('.poem-line.flagged').length;
+  document.getElementById('flaggedCount').textContent = n + ' LINE' + (n !== 1 ? 'S' : '') + ' FLAGGED';
+}
+
+// ─── SUBMIT / SAVE ───────────────────────────────────────
+function submitReport() {
+  const tas = document.querySelectorAll('textarea');
+  const data = {};
+  tas.forEach((ta, i) => { data['field_' + (i+1)] = ta.value; });
+  data.group = 8;
+  data.key = 'D';
+  data.timestamp = new Date().toISOString();
+
+  // Save to localStorage
+  localStorage.setItem('report_group_8', JSON.stringify(data));
+
+  // Show toast
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// Restore on reload
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('report_group_8');
+  if (saved) {
+    const data = JSON.parse(saved);
+    const tas = document.querySelectorAll('textarea');
+    tas.forEach((ta, i) => {
+      const val = data['field_' + (i+1)];
+      if (val) ta.value = val;
+    });
+  }
+});
+</script>
+</body>
+</html>
