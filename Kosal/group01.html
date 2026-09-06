@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cell A · Decode the Signal</title>
+<style>
+:root{
+  --bg-dark:#0D1E1E;
+  --bg-mid:#134040;
+  --bg-wall:#1A4F4F;
+  --cream:#F5EFE0;
+  --accent: #E8A020;
+  --accent-dim: color-mix(in srgb, #E8A020 35%, #0D1E1E);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg-dark);color:var(--cream);
+  font-family:'Rockwell', 'Georgia', serif;}
+h1,h2,h3{font-family:'Rockwell','Georgia',serif; margin:0 0 .4em 0;}
+.hidden{display:none !important;}
+.wrap{max-width:960px;margin:0 auto;padding:18px 18px 60px;}
+
+/* ---------- top bar ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 16px;background:var(--bg-mid);border-bottom:4px solid var(--accent);
+  position:sticky;top:0;z-index:5;}
+.topbar .tag{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:bold;}
+.topbar .theory{font-size:18px;font-weight:bold;color:var(--cream);}
+.locks{display:flex;gap:6px;font-size:22px;}
+
+/* ---------- intro ---------- */
+.intro-card{background:var(--bg-mid);border:2px solid var(--accent);border-radius:10px;
+  padding:28px 26px;margin-top:26px;}
+.intro-card h1{color:var(--accent);font-size:30px;}
+.intro-card p{font-size:18px;line-height:1.5;}
+.key-chip{display:inline-block;background:var(--accent);color:var(--bg-dark);
+  font-weight:bold;padding:4px 14px;border-radius:20px;font-size:14px;letter-spacing:1px;margin-bottom:10px;}
+.btn{background:var(--accent);color:var(--bg-dark);border:none;border-radius:8px;
+  font-family:inherit;font-weight:bold;font-size:18px;padding:12px 26px;cursor:pointer;
+  margin-top:14px;}
+.btn:hover{filter:brightness(1.08);}
+.btn.secondary{background:transparent;border:2px solid var(--cream);color:var(--cream);}
+
+/* ---------- the cell scene: first-person perspective room ---------- */
+.cell{position:relative;width:100%;aspect-ratio:16/10;margin-top:18px;border-radius:6px;
+  overflow:hidden;border:6px solid #050c0c; background:#050c0c;}
+
+.cell-photo{position:absolute; inset:0; background-image:url('room-bg.jpg');
+  background-size:cover; background-position:center; filter:saturate(0.92) brightness(0.94);}
+.cell-photo-fallback{position:absolute; inset:0; display:flex; align-items:center;
+  justify-content:center; text-align:center; padding:20px; font-size:14px; color:var(--cream);
+  opacity:.7; background:linear-gradient(#173d3d,#0f2828);}
+
+/* hidden hotspots - invisible until hovered, faint slow shimmer so touch users can still find them */
+.hotspot, .decoy{position:absolute; z-index:5; background:rgba(255,255,255,0.01); border:none;
+  cursor:pointer; padding:0; border-radius:50%; box-shadow:0 0 0 0 transparent;
+  animation:shimmer 5s infinite;}
+.hotspot:hover, .decoy:hover{background:rgba(232,160,32,0.16);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 55%, transparent);}
+.hotspot .lockmark{position:absolute; top:-8px; right:-8px; font-size:16px; z-index:6;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.8));}
+.hotspot.solved{background:rgba(124,252,154,0.14); box-shadow:0 0 0 3px #7CFC9A;
+  animation:none;}
+@keyframes shimmer{
+  0%,88%,100%{background:rgba(255,255,255,0.01); box-shadow:0 0 0 0 transparent;}
+  94%{background:rgba(255,255,255,0.10); box-shadow:0 0 0 4px rgba(255,255,255,.12);}
+}
+.hotspot-label{position:absolute; bottom:-22px; left:50%; transform:translateX(-50%);
+  font-size:11px; white-space:nowrap; color:var(--cream); opacity:0;
+  background:rgba(5,12,12,.7); padding:1px 6px; border-radius:4px; pointer-events:none;
+  transition:opacity .15s;}
+.hotspot:hover .hotspot-label, .hotspot.solved .hotspot-label{opacity:.9;}
+
+.search-hint{margin-top:10px; font-size:14px; text-align:center; color:var(--cream); opacity:.7;
+  font-style:italic;}
+
+.door-vignette{position:absolute; inset:0; pointer-events:none; z-index:4;
+  box-shadow: inset 0 0 70px 22px rgba(0,0,0,.6);}
+.door-slot{position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:26%;
+  height:5%; z-index:5; display:flex; justify-content:space-evenly; align-items:center;
+  background:#050c0c; border-top:3px solid #000;}
+.door-slot span{width:8%; height:70%; background:#2a2a2a;}
+
+/* decoy "no clue" popup */
+.decoy-popup{position:fixed; inset:0; background:rgba(5,12,12,.75); display:flex;
+  align-items:center; justify-content:center; padding:20px; z-index:25;}
+.decoy-card{background:var(--bg-mid); border:2px solid var(--accent-dim); border-radius:10px;
+  padding:22px 24px; max-width:380px; text-align:center;}
+.decoy-card .zoom-desc{font-size:16px; font-style:italic; opacity:.85; margin-bottom:10px;}
+.decoy-card .no-clue{font-size:22px; font-weight:bold; color:var(--accent);}
+.decoy-card button{margin-top:14px;}
+
+.progress-line{margin-top:16px; font-size:16px; text-align:center; color:var(--cream); opacity:.9;}
+
+/* ---------- modal ---------- */
+.modal{background:var(--bg-mid); border:3px solid var(--accent); border-radius:12px;
+  max-width:720px; width:100%; padding:24px 24px 26px;}
+.modal .chip{display:inline-block; background:var(--accent); color:var(--bg-dark);
+  font-weight:bold; font-size:13px; letter-spacing:1px; padding:3px 12px; border-radius:16px; margin-bottom:10px;}
+.modal h2{font-size:22px; line-height:1.35;}
+.poem-link{display:inline-block; margin:14px 0 4px; padding:10px 18px; border-radius:8px;
+  background:var(--accent-dim); border:2px solid var(--accent); color:var(--cream);
+  text-decoration:none; font-weight:bold; font-size:16px;}
+.poem-link:hover{filter:brightness(1.15);}
+.section-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(64px,1fr)); gap:10px;
+  margin-top:14px;}
+.section-btn{background:var(--bg-dark); border:2px solid var(--accent-dim); color:var(--cream);
+  font-family:inherit; font-weight:bold; font-size:18px; border-radius:8px; padding:14px 0;
+  cursor:pointer;}
+.section-btn:hover{border-color:var(--accent);}
+.section-btn.correct-flash{background:#2e6b3e !important; border-color:#7CFC9A !important;}
+.section-btn.wrong-flash{background:#7a2b2b !important; border-color:#F0A6A6 !important;}
+.section-btn.revealed{background:color-mix(in srgb, var(--accent) 35%, transparent);
+  border-color:var(--accent);}
+.section-summary{font-size:20px; letter-spacing:1px; margin-top:6px;}
+.feedback{margin-top:12px; font-size:16px; min-height:24px;}
+.feedback.ok{color:#8CF0A6;}
+.feedback.no{color:#F0A6A6;}
+.hint{margin-top:8px; font-size:15px; font-style:italic; color:var(--accent); opacity:.9;}
+.modal-actions{margin-top:16px; display:flex; gap:10px; justify-content:flex-end;}
+
+/* ---------- escape screen ---------- */
+.escape-card{background:var(--bg-mid); border:2px solid var(--accent); border-radius:10px;
+  padding:26px; margin-top:20px;}
+.escape-card h1{color:var(--accent); font-size:30px;}
+textarea{width:100%; min-height:110px; font-family:inherit; font-size:17px; padding:12px;
+  border-radius:8px; border:2px solid var(--accent-dim); background:var(--bg-dark); color:var(--cream);
+  margin-top:8px;}
+.copy-note{font-size:14px; opacity:.8; margin-top:8px;}
+
+/* ---------- setup banner ---------- */
+.setup-banner{background:#5a3b12; border:2px dashed #f5c869; color:#ffe9c2; padding:14px 16px;
+  border-radius:8px; margin-bottom:16px; font-size:15px; line-height:1.5;}
+.setup-banner code{background:rgba(0,0,0,.3); padding:1px 5px; border-radius:4px;}
+
+@media (max-width:600px){
+  .hotspot{width:52px;height:52px;font-size:24px;}
+  .intro-card h1{font-size:24px;}
+  .modal h2{font-size:19px;}
+  .topbar{padding:8px 12px; gap:6px;}
+  .topbar .theory{font-size:15px;}
+  .locks{font-size:16px;}
+  .hotspot-label{font-size:10px; bottom:-20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="tag">Decode the Signal &middot; Cell A</div>
+    <div class="theory">Hall (1990) &middot; Identity in Process</div>
+  </div>
+  <div class="locks" id="lockDisplay">🔒🔒🔒🔒</div>
+</div>
+
+<div class="wrap">
+
+  <div id="setupBanner" class="setup-banner hidden">
+    ⚠️ <strong>Teacher setup needed.</strong> Open this file in a text editor and find the
+    <code>TEACHER CONFIG</code> section near the bottom of the file.
+    Check the <code>POEM_URL</code> link, set <code>NUM_SECTIONS</code> to match the poem,
+    and set the <code>correctSection</code> number for each of the 4 questions.
+  </div>
+
+  <div id="introScreen">
+    <div class="intro-card">
+      <span class="key-chip">KEY A</span>
+      <h1>Cell A: Hall (1990) &middot; Identity in Process</h1>
+      <p>The door just clicked shut behind you. You're in Cell A now, and somewhere in
+      Kosal Khiev's poem, four sections hold the key to your theory. The room is full of
+      objects - most of them are dead ends. Move your cursor around, click what looks
+      promising, decide which SECTION answers its question, and unlock it. Find all 4
+      to get that door back open.</p>
+      <p style="font-size:16px;opacity:.85;">Work as a group. Talk it through before you lock in an answer &mdash;
+      you can try again if you're wrong, but escaping on the first try is the real win.</p>
+      <a class="poem-link" id="introPoemLink" href="#" target="_blank" rel="noopener">📖 Open the poem &rarr;</a><br>
+      <button class="btn" id="enterCellBtn">Walk in &rarr;</button>
+    </div>
+  </div>
+
+  <div id="roomScreen" class="hidden">
+    <div class="cell" id="cellScene">
+      <div class="cell-photo" id="cellPhoto"></div>
+      <div class="door-vignette"></div>
+      <div class="door-slot"><span></span><span></span><span></span><span></span></div>
+      <!-- real hotspots + decoy clutter injected by JS -->
+    </div>
+    <div class="search-hint">🔍 Move your cursor around the room - not everything is a clue.</div>
+    <div class="progress-line" id="progressLine">0 / 4 sections found</div>
+  </div>
+
+  <div id="escapeScreen" class="hidden">
+    <div class="escape-card">
+      <h1>🔓 You escaped Cell A!</h1>
+      <p style="font-size:18px;">Your four winning sections were:</p>
+      <p class="section-summary" id="escapeSummary"></p>
+      <a class="poem-link" id="escapePoemLink" href="#" target="_blank" rel="noopener">📖 Reread the poem &rarr;</a>
+      <p style="font-size:18px;margin-top:18px;"><strong>Which of those sections is YOUR favourite &mdash; and why?</strong></p>
+      <textarea id="favoriteResponse" placeholder="Write a sentence or two here..."></textarea>
+      <button class="btn" id="copyBtn">Copy my answer</button>
+      <span class="copy-note" id="copyNote"></span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Question modal -->
+<div class="overlay hidden" id="overlay">
+  <div class="modal">
+    <span class="chip" id="modalChip">KEY A</span>
+    <h2 id="modalPrompt"></h2>
+    <a class="poem-link" id="modalPoemLink" href="#" target="_blank" rel="noopener">📖 Open the poem &rarr;</a>
+    <div class="section-grid" id="modalSections"></div>
+    <div class="feedback" id="modalFeedback"></div>
+    <div class="hint hidden" id="modalHint"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" id="closeModalBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =================================================================
+   TEACHER CONFIG - edit everything in this block, nothing else.
+   ================================================================= */
+
+// 1) Link to where students read the poem (Canvas, or directly to Lyrikline).
+//    This file never contains the poem text itself - only this link.
+const POEM_URL = "https://www.lyrikline.org/en/poems/moments-btween-nights-10385";
+const POEM_LABEL = "Read “Moments B'tween Nights” by Kosal Khiev →";
+
+// 2) How many stanzas/sections does the poem have? Read it once and count
+//    natural breaks (stanzas, or verse paragraphs). Number them 1, 2, 3...
+//    Set that count here - the room will build that many number buttons.
+const NUM_SECTIONS = 9;
+
+// 3) For each of the 4 questions below, set correctSection to the section
+//    NUMBER (matching your count above) that best answers it.
+//    Example: if section 3 is the right answer, write: correctSection: 3
+//    Leave as null until you've decided - students will see a setup
+//    message until every question has a number.
+const QUESTIONS = [
+  { item: "Notebook", prompt: "Find a line that shows his identity is NOT the same as it used to be - something has changed.", correctSection: 2, hint: "Look for a moment of before/after, or a comparison to who he was." },
+  { item: "Photograph", prompt: "Find a line that shows how his PAST or his history shaped who he is becoming.", correctSection: 8, hint: "Think about where a memory, a place, or an event shapes him." },
+  { item: "Calendar", prompt: "Find a line that shows he is still BECOMING - not finished, still in progress.", correctSection: 5, hint: "Look for movement, growth, or an unfinished feeling." },
+  { item: "Krama scarf", prompt: "Find a line that shows he holds MORE THAN ONE identity at the same time.", correctSection: 1, hint: "Look for two places, two names, or two roles named close together." }
+];
+
+/* =================================================================
+   END TEACHER CONFIG - the rest of this file runs the room itself.
+   ================================================================= */
+
+const KEY_LETTER = "A";
+const ICONS = ["\ud83d\udcd3", "\ud83d\uddbc\ufe0f", "\ud83d\udcc5", "\ud83e\udde3"];
+
+function isConfigured() {
+  const questionsReady = QUESTIONS.every(q => Number.isInteger(q.correctSection));
+  return Number.isInteger(NUM_SECTIONS) && NUM_SECTIONS > 0 && questionsReady;
+}
+
+let unlocked = new Array(QUESTIONS.length).fill(false);
+let activeQuestion = null;
+let wrongTries = 0;
+
+function renderSectionGrid(container, opts) {
+  opts = opts || {};
+  container.innerHTML = "";
+  for (let i = 1; i <= NUM_SECTIONS; i++) {
+    const el = document.createElement(opts.clickable ? "button" : "div");
+    el.className = "section-btn";
+    el.textContent = i;
+    if (opts.highlightSet && opts.highlightSet.has(i)) el.classList.add("revealed");
+    if (opts.clickable) {
+      el.addEventListener("click", () => handleSectionClick(i, el));
+    }
+    container.appendChild(el);
+  }
+}
+
+const DECOYS = [
+  {top:"6%",  left:"48%", w:"14%", h:"10%", desc:"A close-up of the bars on the window."},
+  {top:"30%", left:"58%", w:"8%",  h:"10%", desc:"A stain on the wall, shaped like nothing in particular."},
+  {top:"78%", left:"38%", w:"10%", h:"10%", desc:"A pair of worn sandals by the bed."},
+  {top:"70%", left:"10%", w:"9%",  h:"12%", desc:"A metal cup, empty."},
+  {top:"4%",  left:"12%", w:"12%", h:"8%",  desc:"A crack running along the ceiling."},
+  {top:"85%", left:"62%", w:"14%", h:"10%", desc:"A woven floor mat, faded from years of use."},
+  {top:"45%", left:"88%", w:"8%",  h:"14%", desc:"The corner of the bed frame."},
+  {top:"15%", left:"85%", w:"10%", h:"10%", desc:"Peeling paint near the ceiling."},
+  {top:"60%", left:"48%", w:"9%",  h:"10%", desc:"A fold in the blanket."},
+  {top:"38%", left:"22%", w:"9%",  h:"10%", desc:"The edge of the desk drawer. It's empty."}
+];
+
+function buildRoom() {
+  const scene = document.getElementById("cellScene");
+  const positionsByItem = {
+    "Notebook":    {top:"56%", left:"16%", w:"11%", h:"11%"},
+    "Photograph":  {top:"40%", left:"30%", w:"10%", h:"10%"},
+    "Calendar":    {top:"22%", left:"40%", w:"10%", h:"12%"},
+    "Krama scarf": {top:"62%", left:"70%", w:"14%", h:"12%"}
+  };
+  const fallback = [
+    {top:"55%", left:"15%", w:"11%", h:"11%"}, {top:"40%", left:"30%", w:"10%", h:"10%"},
+    {top:"22%", left:"40%", w:"10%", h:"12%"}, {top:"62%", left:"70%", w:"14%", h:"12%"}
+  ];
+  QUESTIONS.forEach((q, i) => {
+    const pos = positionsByItem[q.item] || fallback[i % fallback.length];
+    const hotspot = document.createElement("button");
+    hotspot.className = "hotspot";
+    hotspot.style.top = pos.top;
+    hotspot.style.left = pos.left;
+    hotspot.style.width = pos.w;
+    hotspot.style.height = pos.h;
+    hotspot.innerHTML = '<span class="lockmark">🔒</span>';
+    hotspot.addEventListener("click", () => openQuestion(i));
+    const label = document.createElement("div");
+    label.className = "hotspot-label";
+    label.textContent = q.item || ("Item " + (i+1));
+    hotspot.appendChild(label);
+    scene.appendChild(hotspot);
+  });
+
+  DECOYS.forEach(d => {
+    const decoy = document.createElement("button");
+    decoy.className = "decoy";
+    decoy.style.top = d.top;
+    decoy.style.left = d.left;
+    decoy.style.width = d.w;
+    decoy.style.height = d.h;
+    decoy.addEventListener("click", () => showDecoyPopup(d.desc));
+    scene.appendChild(decoy);
+  });
+
+  [document.getElementById("introPoemLink"), document.getElementById("modalPoemLink"),
+   document.getElementById("escapePoemLink")].forEach(a => {
+    if (a) { a.href = POEM_URL; a.textContent = "📖 " + POEM_LABEL; }
+  });
+}
+
+function showDecoyPopup(desc) {
+  const wrap = document.createElement("div");
+  wrap.className = "decoy-popup";
+  wrap.innerHTML =
+    '<div class="decoy-card">' +
+      '<div class="zoom-desc">' + desc + '</div>' +
+      '<div class="no-clue">No clue here!</div>' +
+      '<button class="btn secondary">Close</button>' +
+    '</div>';
+  wrap.querySelector("button").addEventListener("click", () => wrap.remove());
+  wrap.addEventListener("click", (e) => { if (e.target === wrap) wrap.remove(); });
+  document.body.appendChild(wrap);
+}
+
+function openQuestion(i) {
+  activeQuestion = i;
+  wrongTries = 0;
+  document.getElementById("modalChip").textContent = "KEY " + KEY_LETTER;
+  document.getElementById("modalPrompt").textContent = QUESTIONS[i].prompt;
+  document.getElementById("modalFeedback").textContent = "";
+  document.getElementById("modalFeedback").className = "feedback";
+  document.getElementById("modalHint").classList.add("hidden");
+  const gridEl = document.getElementById("modalSections");
+  const highlightSet = unlocked[i] ? new Set([QUESTIONS[i].correctSection]) : null;
+  renderSectionGrid(gridEl, {clickable: !unlocked[i], highlightSet});
+  if (unlocked[i]) {
+    document.getElementById("modalFeedback").textContent = "Already unlocked - here's your section.";
+    document.getElementById("modalFeedback").className = "feedback ok";
+  }
+  document.getElementById("overlay").classList.remove("hidden");
+}
+
+function handleSectionClick(i, el) {
+  const q = QUESTIONS[activeQuestion];
+  if (i === q.correctSection) {
+    el.classList.add("correct-flash");
+    document.getElementById("modalFeedback").textContent = "Yes - that's it. Unlocked.";
+    document.getElementById("modalFeedback").className = "feedback ok";
+    unlocked[activeQuestion] = true;
+    updateLocksDisplay();
+    setTimeout(() => {
+      document.getElementById("overlay").classList.add("hidden");
+      checkEscape();
+    }, 900);
+  } else {
+    el.classList.add("wrong-flash");
+    setTimeout(() => el.classList.remove("wrong-flash"), 500);
+    wrongTries++;
+    document.getElementById("modalFeedback").textContent = "Not that one - reread that section.";
+    document.getElementById("modalFeedback").className = "feedback no";
+    if (wrongTries >= 3 && q.hint) {
+      const hintEl = document.getElementById("modalHint");
+      hintEl.textContent = "💡 " + q.hint;
+      hintEl.classList.remove("hidden");
+    }
+  }
+}
+
+function updateLocksDisplay() {
+  const n = unlocked.filter(Boolean).length;
+  document.getElementById("lockDisplay").textContent = "🔓".repeat(n) + "🔒".repeat(QUESTIONS.length - n);
+  document.getElementById("progressLine").textContent = n + " / " + QUESTIONS.length + " sections found";
+  document.querySelectorAll(".hotspot").forEach((h, idx) => {
+    if (unlocked[idx]) {
+      h.classList.add("solved");
+      h.querySelector(".lockmark").textContent = "🔓";
+    }
+  });
+}
+
+function checkEscape() {
+  if (unlocked.every(Boolean)) {
+    document.getElementById("roomScreen").classList.add("hidden");
+    document.getElementById("escapeScreen").classList.remove("hidden");
+    const sections = QUESTIONS.map(q => q.correctSection);
+    document.getElementById("escapeSummary").textContent = sections.join("  ·  ");
+  }
+}
+
+document.getElementById("enterCellBtn").addEventListener("click", () => {
+  document.getElementById("introScreen").classList.add("hidden");
+  document.getElementById("roomScreen").classList.remove("hidden");
+});
+document.getElementById("closeModalBtn").addEventListener("click", () => {
+  document.getElementById("overlay").classList.add("hidden");
+});
+document.getElementById("copyBtn").addEventListener("click", () => {
+  const txt = document.getElementById("favoriteResponse").value;
+  navigator.clipboard.writeText(txt).then(() => {
+    document.getElementById("copyNote").textContent = "Copied! Paste it into Canvas.";
+  }).catch(() => {
+    document.getElementById("copyNote").textContent = "Select the text above and copy it manually.";
+  });
+});
+
+if (!isConfigured()) {
+  document.getElementById("setupBanner").classList.remove("hidden");
+}
+buildRoom();
+updateLocksDisplay();
+</script>
+</body>
+</html>
