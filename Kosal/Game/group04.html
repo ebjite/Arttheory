@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cell D · Decode the Signal</title>
+<style>
+:root{
+  --bg-dark:#0D1E1E;
+  --bg-mid:#134040;
+  --bg-wall:#1A4F4F;
+  --cream:#F5EFE0;
+  --accent: #9B6BB5;
+  --accent-dim: color-mix(in srgb, #9B6BB5 35%, #0D1E1E);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg-dark);color:var(--cream);
+  font-family:'Rockwell', 'Georgia', serif;}
+h1,h2,h3{font-family:'Rockwell','Georgia',serif; margin:0 0 .4em 0;}
+.hidden{display:none !important;}
+.wrap{max-width:960px;margin:0 auto;padding:18px 18px 60px;}
+
+/* ---------- top bar ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 16px;background:var(--bg-mid);border-bottom:4px solid var(--accent);
+  position:sticky;top:0;z-index:5;}
+.topbar .tag{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:bold;}
+.topbar .theory{font-size:18px;font-weight:bold;color:var(--cream);}
+.locks{display:flex;gap:6px;font-size:22px;}
+
+/* ---------- intro ---------- */
+.intro-card{background:var(--bg-mid);border:2px solid var(--accent);border-radius:10px;
+  padding:28px 26px;margin-top:26px;}
+.intro-card h1{color:var(--accent);font-size:30px;}
+.intro-card p{font-size:18px;line-height:1.5;}
+.key-chip{display:inline-block;background:var(--accent);color:var(--bg-dark);
+  font-weight:bold;padding:4px 14px;border-radius:20px;font-size:14px;letter-spacing:1px;margin-bottom:10px;}
+.btn{background:var(--accent);color:var(--bg-dark);border:none;border-radius:8px;
+  font-family:inherit;font-weight:bold;font-size:18px;padding:12px 26px;cursor:pointer;
+  margin-top:14px;}
+.btn:hover{filter:brightness(1.08);}
+.btn.secondary{background:transparent;border:2px solid var(--cream);color:var(--cream);}
+
+/* ---------- the cell scene: first-person perspective room ---------- */
+.cell{position:relative;width:100%;aspect-ratio:16/10;margin-top:18px;border-radius:6px;
+  overflow:hidden;border:6px solid #050c0c; background:#050c0c;}
+
+.cell svg{position:absolute; inset:0; width:100%; height:100%;}
+.manga-overlay{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1;}
+
+/* hidden hotspots - invisible until hovered, faint slow shimmer so touch users can still find them */
+.hotspot, .decoy{position:absolute; z-index:5; background:rgba(255,255,255,0.01); border:none;
+  cursor:pointer; padding:0; border-radius:50%; box-shadow:0 0 0 0 transparent;
+  animation:shimmer 5s infinite;}
+.hotspot{z-index:8;}
+.hotspot:hover, .decoy:hover{background:rgba(232,160,32,0.16);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 55%, transparent);}
+.hotspot.solved{background:rgba(124,252,154,0.14); box-shadow:0 0 0 3px #7CFC9A;
+  animation:none;}
+@keyframes shimmer{
+  0%,88%,100%{background:rgba(59,47,34,0.02); box-shadow:0 0 0 0 transparent;}
+  94%{background:rgba(59,47,34,0.14); box-shadow:0 0 0 4px rgba(59,47,34,.16);}
+}
+  font-size:11px; white-space:nowrap; color:var(--cream); opacity:0;
+  background:rgba(5,12,12,.7); padding:1px 6px; border-radius:4px; pointer-events:none;
+  transition:opacity .15s;}
+.hotspot:hover .hotspot-label, .hotspot.solved .hotspot-label{opacity:.9;}
+
+.search-hint{margin-top:10px; font-size:14px; text-align:center; color:var(--cream); opacity:.7;
+  font-style:italic;}
+
+.door-vignette{position:absolute; inset:0; pointer-events:none; z-index:4;
+  box-shadow: inset 0 0 70px 22px rgba(0,0,0,.6);}
+.door-slot{position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:26%;
+  height:5%; z-index:5; display:flex; justify-content:space-evenly; align-items:center;
+  background:#050c0c; border-top:3px solid #000;}
+.door-slot span{width:8%; height:70%; background:#2a2a2a;}
+
+/* decoy "no clue" popup */
+.decoy-popup{position:fixed; inset:0; background:rgba(5,12,12,.75); display:flex;
+  align-items:center; justify-content:center; padding:20px; z-index:25;}
+.decoy-card{background:var(--bg-mid); border:2px solid var(--accent-dim); border-radius:10px;
+  padding:22px 24px; max-width:380px; text-align:center;}
+.decoy-card .zoom-desc{font-size:16px; font-style:italic; opacity:.85; margin-bottom:10px;}
+.decoy-card .no-clue{font-size:22px; font-weight:bold; color:var(--accent);}
+.decoy-card button{margin-top:14px;}
+
+.progress-line{margin-top:16px; font-size:16px; text-align:center; color:var(--cream); opacity:.9;}
+
+/* ---------- modal ---------- */
+.overlay{position:fixed; inset:0; background:rgba(5,12,12,.82); display:flex;
+  align-items:center; justify-content:center; padding:26px 14px; overflow-y:auto; z-index:20;}
+.modal{background:var(--bg-mid); border:3px solid var(--accent); border-radius:12px;
+  max-width:720px; width:100%; padding:24px 24px 26px;}
+.modal .chip{display:inline-block; background:var(--accent); color:var(--bg-dark);
+  font-weight:bold; font-size:13px; letter-spacing:1px; padding:3px 12px; border-radius:16px; margin-bottom:10px;}
+.modal h2{font-size:22px; line-height:1.35;}
+.poem-link{display:inline-block; margin:14px 0 4px; padding:10px 18px; border-radius:8px;
+  background:var(--accent-dim); border:2px solid var(--accent); color:var(--cream);
+  text-decoration:none; font-weight:bold; font-size:16px;}
+.poem-link:hover{filter:brightness(1.15);}
+.section-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(64px,1fr)); gap:10px;
+  margin-top:14px;}
+.section-btn{background:var(--bg-dark); border:2px solid var(--accent-dim); color:var(--cream);
+  font-family:inherit; font-weight:bold; font-size:18px; border-radius:8px; padding:14px 0;
+  cursor:pointer;}
+.section-btn:hover{border-color:var(--accent);}
+.section-btn.correct-flash{background:#2e6b3e !important; border-color:#7CFC9A !important;}
+.section-btn.wrong-flash{background:#7a2b2b !important; border-color:#F0A6A6 !important;}
+.section-btn.revealed{background:color-mix(in srgb, var(--accent) 35%, transparent);
+  border-color:var(--accent);}
+.section-summary{font-size:20px; letter-spacing:1px; margin-top:6px;}
+.feedback{margin-top:12px; font-size:16px; min-height:24px;}
+.feedback.ok{color:#8CF0A6;}
+.feedback.no{color:#F0A6A6;}
+.hint{margin-top:8px; font-size:15px; font-style:italic; color:var(--accent); opacity:.9;}
+.modal-actions{margin-top:16px; display:flex; gap:10px; justify-content:flex-end;}
+
+/* ---------- escape screen ---------- */
+.escape-card{background:var(--bg-mid); border:2px solid var(--accent); border-radius:10px;
+  padding:26px; margin-top:20px;}
+.escape-card h1{color:var(--accent); font-size:30px;}
+textarea{width:100%; min-height:110px; font-family:inherit; font-size:17px; padding:12px;
+  border-radius:8px; border:2px solid var(--accent-dim); background:var(--bg-dark); color:var(--cream);
+  margin-top:8px;}
+.copy-note{font-size:14px; opacity:.8; margin-top:8px;}
+
+/* ---------- setup banner ---------- */
+.setup-banner{background:#5a3b12; border:2px dashed #f5c869; color:#ffe9c2; padding:14px 16px;
+  border-radius:8px; margin-bottom:16px; font-size:15px; line-height:1.5;}
+.setup-banner code{background:rgba(0,0,0,.3); padding:1px 5px; border-radius:4px;}
+
+@media (max-width:600px){
+  .hotspot{width:52px;height:52px;font-size:24px;}
+  .intro-card h1{font-size:24px;}
+  .modal h2{font-size:19px;}
+  .topbar{padding:8px 12px; gap:6px;}
+  .topbar .theory{font-size:15px;}
+  .locks{font-size:16px;}
+  .hotspot-label{font-size:10px; bottom:-20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="tag">Decode the Signal &middot; Cell D</div>
+    <div class="theory">Tajfel &amp; Turner &middot; In/Out Groups</div>
+  </div>
+  <div class="locks" id="lockDisplay">🔒🔒🔒🔒</div>
+</div>
+
+<div class="wrap">
+
+  <div id="setupBanner" class="setup-banner hidden">
+    ⚠️ <strong>Teacher setup needed.</strong> Open this file in a text editor and find the
+    <code>TEACHER CONFIG</code> section near the bottom of the file.
+    Check the <code>POEM_URL</code> link, set <code>NUM_SECTIONS</code> to match the poem,
+    and set the <code>correctSection</code> number for each of the 4 questions.
+  </div>
+
+  <div id="introScreen">
+    <div class="intro-card">
+      <span class="key-chip">KEY D</span>
+      <h1>Cell D: Tajfel &amp; Turner &middot; In/Out Groups</h1>
+      <p>The door just clicked shut behind you. You're in Cell D now, and somewhere in
+      Kosal Khiev's poem, four sections hold the key to your theory. The room is full of
+      objects - most of them are dead ends. Move your cursor around, click what looks
+      promising, decide which SECTION answers its question, and unlock it. Find all 4
+      to get that door back open.</p>
+      <p style="font-size:16px;opacity:.85;">Work as a group. Talk it through before you lock in an answer &mdash;
+      you can try again if you're wrong, but escaping on the first try is the real win.</p>
+      <a class="poem-link" id="introPoemLink" href="#" target="_blank" rel="noopener">📖 Open the poem &rarr;</a><br>
+      <button class="btn" id="enterCellBtn">Walk in &rarr;</button>
+    </div>
+  </div>
+
+  <div id="roomScreen" class="hidden">
+    <div class="cell" id="cellScene">
+      <img id="mangaOverlay" class="manga-overlay hidden" alt="" />
+      <svg viewBox="0 0 1000 625" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <filter id="sketchy" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" result="n" seed="7"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5"/>
+          </filter>
+          <pattern id="hatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="7" stroke="#3b2b1e" stroke-width="1"/>
+          </pattern>
+          <pattern id="hatchDense" width="4" height="4" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="4" stroke="#3b2b1e" stroke-width="1.1"/>
+          </pattern>
+          <pattern id="hatchCross" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="6" stroke="#3b2b1e" stroke-width="0.9"/>
+            <line x1="0" y1="0" x2="6" y2="0" stroke="#3b2b1e" stroke-width="0.9"/>
+          </pattern>
+          <pattern id="checker" width="24" height="24" patternUnits="userSpaceOnUse">
+            <rect width="24" height="24" fill="#e8dcc0"/>
+            <rect width="12" height="12" fill="#7a2f28"/>
+            <rect x="12" y="12" width="12" height="12" fill="#7a2f28"/>
+          </pattern>
+          <pattern id="tile" width="62" height="62" patternUnits="userSpaceOnUse">
+            <rect width="62" height="62" fill="#e6dabd"/>
+            <rect width="60" height="60" fill="#ece1c9" stroke="#b8a97e" stroke-width="1"/>
+          </pattern>
+          <pattern id="wood" width="90" height="14" patternUnits="userSpaceOnUse">
+            <rect width="90" height="14" fill="#8a6a42"/>
+            <path d="M0,7 Q22,3 45,7 T90,7" stroke="#6b4e2c" stroke-width="1" fill="none"/>
+          </pattern>
+          <pattern id="screentone" width="6" height="6" patternUnits="userSpaceOnUse">
+            <rect width="6" height="6" fill="none"/>
+            <circle cx="3" cy="3" r="1.4" fill="#2a1f14"/>
+          </pattern>
+          <pattern id="screentoneLight" width="8" height="8" patternUnits="userSpaceOnUse">
+            <rect width="8" height="8" fill="none"/>
+            <circle cx="4" cy="4" r="1" fill="#2a1f14"/>
+          </pattern>
+          <radialGradient id="vignette" cx="50%" cy="42%" r="75%">
+            <stop offset="55%" stop-color="#000000" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="0.5"/>
+          </radialGradient>
+        </defs>
+
+        <rect x="0" y="0" width="1000" height="625" fill="#efe8d4"/>
+        <polygon points="0,0 1000,0 720,95 260,60" fill="#ddd0aa"/>
+        <polygon points="0,0 260,60 300,520 0,600" fill="#c3b083" opacity="0.95"/>
+        <polygon points="1000,0 720,95 690,530 1000,600" fill="#b8a578" opacity="0.95"/>
+        <polygon points="260,60 720,95 690,530 300,520" fill="#e8dcbb"/>
+        <polygon points="300,520 690,530 1000,600 0,600" fill="url(#tile)"/>
+        <polygon points="210,525 530,528 600,600 120,600" fill="url(#checker)" opacity="0.92"/>
+        <polygon points="0,0 260,60 300,520 0,600" fill="url(#screentone)" opacity="0.5"/>
+        <polygon points="1000,0 720,95 690,530 1000,600" fill="url(#screentone)" opacity="0.55"/>
+        <polygon points="0,0 1000,0 720,95 260,60" fill="url(#screentoneLight)" opacity="0.3"/>
+
+        <!-- manga light rays streaming from the window -->
+        <g opacity="0.35" stroke="#efe8d4" stroke-width="14">
+          <line x1="150" y1="40" x2="30" y2="340"/>
+          <line x1="180" y1="40" x2="120" y2="360"/>
+          <line x1="210" y1="40" x2="230" y2="380"/>
+          <line x1="235" y1="40" x2="330" y2="390"/>
+        </g>
+        <g opacity="0.5" stroke="#3b2b1e" stroke-width="1">
+          <line x1="150" y1="40" x2="30" y2="340"/>
+          <line x1="235" y1="40" x2="330" y2="390"/>
+        </g>
+
+        <g filter="url(#sketchy)" fill="none" stroke="#3b2b1e" stroke-width="2.5">
+          <!-- window + bars + curtain -->
+          <rect x="55" y="45" width="200" height="200" fill="#efe6cd" stroke="#3b2b1e" stroke-width="3"/>
+          <line x1="105" y1="45" x2="105" y2="245"/>
+          <line x1="155" y1="45" x2="155" y2="245"/>
+          <line x1="205" y1="45" x2="205" y2="245"/>
+          <line x1="55" y1="115" x2="255" y2="115"/>
+          <line x1="55" y1="180" x2="255" y2="180"/>
+          <path d="M255,50 Q300,60 295,140 Q305,200 280,255" fill="url(#hatchDense)" stroke="#3b2b1e"/>
+
+          <!-- wall calendar -->
+          <rect x="285" y="70" width="60" height="72" fill="#f3ecd8" stroke="#3b2b1e"/>
+          <rect x="285" y="70" width="60" height="18" fill="#7a2f28" stroke="#3b2b1e"/>
+          <line x1="295" y1="105" x2="335" y2="105" stroke="#3b2b1e" stroke-width="1.3"/>
+          <line x1="295" y1="118" x2="335" y2="118" stroke="#3b2b1e" stroke-width="1.3"/>
+
+          <!-- low table with vase and bowls (decorative, non-interactive) -->
+          <ellipse cx="145" cy="330" rx="95" ry="26" fill="#e2d5ae" stroke="#3b2b1e"/>
+          <line x1="70" y1="335" x2="55" y2="430" stroke="#3b2b1e" stroke-width="3"/>
+          <line x1="220" y1="335" x2="235" y2="430" stroke="#3b2b1e" stroke-width="3"/>
+          <path d="M120,300 Q120,265 145,260 Q170,265 170,300 Z" fill="url(#hatch)" stroke="#3b2b1e"/>
+          <ellipse cx="90" cy="316" rx="20" ry="10" fill="#f3ecd8" stroke="#3b2b1e"/>
+          <ellipse cx="185" cy="318" rx="22" ry="10" fill="#f3ecd8" stroke="#3b2b1e"/>
+
+          <!-- chair with draped krama shawl -->
+          <rect x="290" y="330" width="90" height="16" fill="#e2d5ae" stroke="#3b2b1e"/>
+          <line x1="300" y1="346" x2="300" y2="420" stroke="#3b2b1e" stroke-width="3"/>
+          <line x1="370" y1="346" x2="370" y2="420" stroke="#3b2b1e" stroke-width="3"/>
+          <line x1="300" y1="330" x2="300" y2="250" stroke="#3b2b1e" stroke-width="4"/>
+          <line x1="370" y1="330" x2="370" y2="250" stroke="#3b2b1e" stroke-width="4"/>
+          <line x1="300" y1="250" x2="370" y2="250" stroke="#3b2b1e" stroke-width="3"/>
+          <path d="M295,255 Q335,275 375,258 L385,340 Q335,360 288,340 Z" fill="url(#checker)" stroke="#3b2b1e"/>
+
+          <!-- shelf with jars and radio (decoy) -->
+          <rect x="690" y="30" width="260" height="150" fill="#e2d5ae" stroke="#3b2b1e" stroke-width="3"/>
+          <line x1="690" y1="100" x2="950" y2="100" stroke="#3b2b1e" stroke-width="2"/>
+          <rect x="710" y="115" width="26" height="55" fill="#f3ecd8" stroke="#3b2b1e"/>
+          <rect x="745" y="120" width="26" height="50" fill="#f3ecd8" stroke="#3b2b1e"/>
+          <rect x="815" y="50" width="110" height="55" rx="4" fill="#d8c9a0" stroke="#3b2b1e" stroke-width="2.5"/>
+          <line x1="900" y1="50" x2="915" y2="20" stroke="#3b2b1e" stroke-width="2"/>
+          <circle cx="835" cy="78" r="9" fill="#efe6cd" stroke="#3b2b1e"/>
+
+          <!-- bed with wood grain, pillow, blanket, propped photo -->
+          <rect x="560" y="250" width="410" height="300" fill="url(#wood)" stroke="#3b2b1e" stroke-width="3"/>
+          <rect x="575" y="235" width="150" height="70" fill="#f3ecd8" stroke="#3b2b1e"/>
+          <rect x="575" y="300" width="365" height="200" fill="#ece1c9" stroke="#3b2b1e"/>
+          <path d="M575,340 Q750,325 940,345" stroke="#b8a97e" stroke-width="1.3" fill="none"/>
+          <path d="M580,400 Q760,385 935,405" stroke="#b8a97e" stroke-width="1.3" fill="none"/>
+          <rect x="780" y="360" width="120" height="95" fill="#f3ecd8" stroke="#3b2b1e" stroke-width="2.5" transform="rotate(-4 840 407)"/>
+          <rect x="795" y="373" width="90" height="68" fill="none" stroke="#b8a97e" stroke-width="1.3" transform="rotate(-4 840 407)"/>
+
+          <!-- mirror leaning (decoy) -->
+          <rect x="920" y="290" width="70" height="230" fill="#efe6cd" stroke="#3b2b1e" stroke-width="3" transform="rotate(4 955 405)"/>
+          <line x1="935" y1="310" x2="935" y2="500" stroke="#b8a97e" stroke-width="1.2" transform="rotate(4 955 405)"/>
+          <line x1="950" y1="310" x2="950" y2="500" stroke="#b8a97e" stroke-width="1.2" transform="rotate(4 955 405)"/>
+
+          <!-- foreground bench with stacked books -->
+          <rect x="15" y="470" width="250" height="24" fill="#e2d5ae" stroke="#3b2b1e" stroke-width="3"/>
+          <line x1="35" y1="494" x2="35" y2="555" stroke="#3b2b1e" stroke-width="3"/>
+          <line x1="245" y1="494" x2="245" y2="555" stroke="#3b2b1e" stroke-width="3"/>
+          <path d="M20,470 Q80,450 140,468 Q170,478 130,470 L60,478 Z" fill="url(#hatch)" stroke="#3b2b1e"/>
+          <rect x="30" y="440" width="90" height="18" fill="#f3ecd8" stroke="#3b2b1e"/>
+          <rect x="38" y="422" width="90" height="18" fill="#efe6cd" stroke="#3b2b1e"/>
+          <rect x="30" y="404" width="90" height="18" fill="#f3ecd8" stroke="#3b2b1e"/>
+        </g>
+        <rect x="0" y="0" width="1000" height="625" fill="url(#vignette)"/>
+      </svg>
+      <div class="door-vignette"></div>
+      <div class="door-slot"><span></span><span></span><span></span><span></span></div>
+      <!-- real hotspots + decoy clutter injected by JS -->
+    </div>
+    <div class="search-hint">🔍 Move your cursor around the room - not everything is a clue.</div>
+    <div class="progress-line" id="progressLine">0 / 4 sections found</div>
+  </div>
+
+  <div id="escapeScreen" class="hidden">
+    <div class="escape-card">
+      <h1>🔓 You escaped Cell D!</h1>
+      <p style="font-size:18px;">Your four winning sections were:</p>
+      <p class="section-summary" id="escapeSummary"></p>
+      <a class="poem-link" id="escapePoemLink" href="#" target="_blank" rel="noopener">📖 Reread the poem &rarr;</a>
+      <p style="font-size:18px;margin-top:18px;"><strong>Which of those sections is YOUR favourite &mdash; and why?</strong></p>
+      <textarea id="favoriteResponse" placeholder="Write a sentence or two here..."></textarea>
+      <button class="btn" id="copyBtn">Copy my answer</button>
+      <span class="copy-note" id="copyNote"></span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Question modal -->
+<div class="overlay hidden" id="overlay">
+  <div class="modal">
+    <span class="chip" id="modalChip">KEY D</span>
+    <h2 id="modalPrompt"></h2>
+    <a class="poem-link" id="modalPoemLink" href="#" target="_blank" rel="noopener">📖 Open the poem &rarr;</a>
+    <div class="section-grid" id="modalSections"></div>
+    <div class="feedback" id="modalFeedback"></div>
+    <div class="hint hidden" id="modalHint"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" id="closeModalBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =================================================================
+   TEACHER CONFIG - edit everything in this block, nothing else.
+   ================================================================= */
+
+// 1) Link to where students read the poem (Canvas, or directly to Lyrikline).
+//    This file never contains the poem text itself - only this link.
+const POEM_URL = "https://www.lyrikline.org/en/poems/moments-btween-nights-10385";
+const POEM_LABEL = "Read “Moments B'tween Nights” by Kosal Khiev →";
+
+// 2) How many stanzas/sections does the poem have? Read it once and count
+//    natural breaks (stanzas, or verse paragraphs). Number them 1, 2, 3...
+//    Set that count here - the room will build that many number buttons.
+const NUM_SECTIONS = 9;
+
+// 3) For each of the 4 questions below, set correctSection to the section
+//    NUMBER (matching your count above) that best answers it.
+//    Example: if section 3 is the right answer, write: correctSection: 3
+//    Leave as null until you've decided - students will see a setup
+//    message until every question has a number.
+const QUESTIONS = [
+  { item: "Notebook", prompt: "Find a line that shows a group he BELONGS to - an in-group.", correctSection: 9, hint: "Look for 'we', 'us', or a named community." },
+  { item: "Photograph", prompt: "Find a line that shows him being EXCLUDED or seen as an outsider - an out-group.", correctSection: 8, hint: "Look for 'they', 'them', or a line about not fitting in." },
+  { item: "Calendar", prompt: "Find a line that shows TENSION between two groups.", correctSection: 7, hint: "Look for conflict, judgement, or opposing sides." },
+  { item: "Krama scarf", prompt: "Find a line that shows his sense of SELF coming from the group he belongs to.", correctSection: 2, hint: "Look for pride, identity, or definition tied to a group." }
+];
+
+/* =================================================================
+   END TEACHER CONFIG - the rest of this file runs the room itself.
+   ================================================================= */
+
+const KEY_LETTER = "D";
+const ICONS = ["\ud83d\udcd3", "\ud83d\uddbc\ufe0f", "\ud83d\udcc5", "\ud83e\udde3"];
+
+function isConfigured() {
+  const questionsReady = QUESTIONS.every(q => Number.isInteger(q.correctSection));
+  return Number.isInteger(NUM_SECTIONS) && NUM_SECTIONS > 0 && questionsReady;
+}
+
+let unlocked = new Array(QUESTIONS.length).fill(false);
+let activeQuestion = null;
+let wrongTries = 0;
+
+function renderSectionGrid(container, opts) {
+  opts = opts || {};
+  container.innerHTML = "";
+  for (let i = 1; i <= NUM_SECTIONS; i++) {
+    const el = document.createElement(opts.clickable ? "button" : "div");
+    el.className = "section-btn";
+    el.textContent = i;
+    if (opts.highlightSet && opts.highlightSet.has(i)) el.classList.add("revealed");
+    if (opts.clickable) {
+      el.addEventListener("click", () => handleSectionClick(i, el));
+    }
+    container.appendChild(el);
+  }
+}
+
+const DECOYS = [
+  {top:"20%", left:"11%", w:"12%", h:"20%", desc:"A shirt hanging on the wall."},
+  {top:"42%", left:"20%", w:"10%", h:"14%", desc:"An old radio on the desk."},
+  {top:"44%", left:"27%", w:"7%",  h:"8%",  desc:"A small silver box."},
+  {top:"57%", left:"39%", w:"14%", h:"14%", desc:"A bowl of burnt incense sticks."},
+  {top:"66%", left:"35%", w:"8%",  h:"16%", desc:"A small statue on the floor."},
+  {top:"49%", left:"66%", w:"7%",  h:"6%",  desc:"A woven bracelet, left on the bed."},
+  {top:"68%", left:"56%", w:"9%",  h:"8%",  desc:"A pair of worn sandals."},
+  {top:"60%", left:"49%", w:"6%",  h:"9%",  desc:"A metal cup."},
+  {top:"63%", left:"87%", w:"12%", h:"22%", desc:"A small lamp, unlit."},
+  {top:"46%", left:"95%", w:"6%",  h:"32%", desc:"A mirror, leaning against the wall."}
+];
+
+function tryLoadMangaArt() {
+  const img = document.getElementById("mangaOverlay");
+  const candidates = ["manga-bg.jpg", "manga-bg.png", "room-bg.jpg", "room-bg.png"];
+  let i = 0;
+  function tryNext() {
+    if (i >= candidates.length) return; // give up quietly, SVG sketch stays as-is
+    const test = new Image();
+    test.onload = () => { img.src = candidates[i]; img.classList.remove("hidden"); };
+    test.onerror = () => { i++; tryNext(); };
+    test.src = candidates[i];
+  }
+  tryNext();
+}
+
+function buildRoom() {
+  const scene = document.getElementById("cellScene");
+  tryLoadMangaArt();
+  const positionsByItem = {
+    "Notebook":    {top:"55%", left:"12%", w:"12%", h:"10%"},
+    "Photograph":  {top:"40%", left:"9%",  w:"9%",  h:"14%"},
+    "Calendar":    {top:"20%", left:"29%", w:"9%",  h:"14%"},
+    "Krama scarf": {top:"49%", left:"64%", w:"20%", h:"18%"}
+  };
+  const fallback = [
+    {top:"55%", left:"12%", w:"12%", h:"10%"}, {top:"40%", left:"9%", w:"9%", h:"14%"},
+    {top:"20%", left:"29%", w:"9%", h:"14%"}, {top:"49%", left:"64%", w:"20%", h:"18%"}
+  ];
+  QUESTIONS.forEach((q, i) => {
+    const pos = positionsByItem[q.item] || fallback[i % fallback.length];
+    const hotspot = document.createElement("button");
+    hotspot.className = "hotspot";
+    hotspot.style.top = pos.top;
+    hotspot.style.left = pos.left;
+    hotspot.style.width = pos.w;
+    hotspot.style.height = pos.h;
+    hotspot.addEventListener("click", () => openQuestion(i));
+    const label = document.createElement("div");
+    label.className = "hotspot-label";
+    label.textContent = q.item || ("Item " + (i+1));
+    hotspot.appendChild(label);
+    scene.appendChild(hotspot);
+  });
+
+  DECOYS.forEach(d => {
+    const decoy = document.createElement("button");
+    decoy.className = "decoy";
+    decoy.style.top = d.top;
+    decoy.style.left = d.left;
+    decoy.style.width = d.w;
+    decoy.style.height = d.h;
+    decoy.addEventListener("click", () => showDecoyPopup(d.desc));
+    scene.appendChild(decoy);
+  });
+
+  [document.getElementById("introPoemLink"), document.getElementById("modalPoemLink"),
+   document.getElementById("escapePoemLink")].forEach(a => {
+    if (a) { a.href = POEM_URL; a.textContent = "📖 " + POEM_LABEL; }
+  });
+}
+
+function showDecoyPopup(desc) {
+  const wrap = document.createElement("div");
+  wrap.className = "decoy-popup";
+  wrap.innerHTML =
+    '<div class="decoy-card">' +
+      '<div class="zoom-desc">' + desc + '</div>' +
+      '<div class="no-clue">No clue here!</div>' +
+      '<button class="btn secondary">Close</button>' +
+    '</div>';
+  wrap.querySelector("button").addEventListener("click", () => wrap.remove());
+  wrap.addEventListener("click", (e) => { if (e.target === wrap) wrap.remove(); });
+  document.body.appendChild(wrap);
+}
+
+function openQuestion(i) {
+  activeQuestion = i;
+  wrongTries = 0;
+  document.getElementById("modalChip").textContent = "KEY " + KEY_LETTER;
+  document.getElementById("modalPrompt").textContent = QUESTIONS[i].prompt;
+  document.getElementById("modalFeedback").textContent = "";
+  document.getElementById("modalFeedback").className = "feedback";
+  document.getElementById("modalHint").classList.add("hidden");
+  const gridEl = document.getElementById("modalSections");
+  const highlightSet = unlocked[i] ? new Set([QUESTIONS[i].correctSection]) : null;
+  renderSectionGrid(gridEl, {clickable: !unlocked[i], highlightSet});
+  if (unlocked[i]) {
+    document.getElementById("modalFeedback").textContent = "Already unlocked - here's your section.";
+    document.getElementById("modalFeedback").className = "feedback ok";
+  }
+  document.getElementById("overlay").classList.remove("hidden");
+}
+
+function handleSectionClick(i, el) {
+  const q = QUESTIONS[activeQuestion];
+  if (i === q.correctSection) {
+    el.classList.add("correct-flash");
+    document.getElementById("modalFeedback").textContent = "Yes - that's it. Unlocked.";
+    document.getElementById("modalFeedback").className = "feedback ok";
+    unlocked[activeQuestion] = true;
+    updateLocksDisplay();
+    setTimeout(() => {
+      document.getElementById("overlay").classList.add("hidden");
+      checkEscape();
+    }, 900);
+  } else {
+    el.classList.add("wrong-flash");
+    setTimeout(() => el.classList.remove("wrong-flash"), 500);
+    wrongTries++;
+    document.getElementById("modalFeedback").textContent = "Not that one - reread that section.";
+    document.getElementById("modalFeedback").className = "feedback no";
+    if (wrongTries >= 3 && q.hint) {
+      const hintEl = document.getElementById("modalHint");
+      hintEl.textContent = "💡 " + q.hint;
+      hintEl.classList.remove("hidden");
+    }
+  }
+}
+
+function updateLocksDisplay() {
+  const n = unlocked.filter(Boolean).length;
+  document.getElementById("lockDisplay").textContent = "🔓".repeat(n) + "🔒".repeat(QUESTIONS.length - n);
+  document.getElementById("progressLine").textContent = n + " / " + QUESTIONS.length + " sections found";
+  document.querySelectorAll(".hotspot").forEach((h, idx) => {
+    if (unlocked[idx]) {
+      h.classList.add("solved");
+    }
+  });
+}
+
+function checkEscape() {
+  if (unlocked.every(Boolean)) {
+    document.getElementById("roomScreen").classList.add("hidden");
+    document.getElementById("escapeScreen").classList.remove("hidden");
+    const sections = QUESTIONS.map(q => q.correctSection);
+    document.getElementById("escapeSummary").textContent = sections.join("  ·  ");
+  }
+}
+
+document.getElementById("enterCellBtn").addEventListener("click", () => {
+  document.getElementById("introScreen").classList.add("hidden");
+  document.getElementById("roomScreen").classList.remove("hidden");
+});
+document.getElementById("closeModalBtn").addEventListener("click", () => {
+  document.getElementById("overlay").classList.add("hidden");
+});
+document.getElementById("copyBtn").addEventListener("click", () => {
+  const txt = document.getElementById("favoriteResponse").value;
+  navigator.clipboard.writeText(txt).then(() => {
+    document.getElementById("copyNote").textContent = "Copied! Paste it into Canvas.";
+  }).catch(() => {
+    document.getElementById("copyNote").textContent = "Select the text above and copy it manually.";
+  });
+});
+
+if (!isConfigured()) {
+  document.getElementById("setupBanner").classList.remove("hidden");
+}
+buildRoom();
+updateLocksDisplay();
+</script>
+</body>
+</html>
